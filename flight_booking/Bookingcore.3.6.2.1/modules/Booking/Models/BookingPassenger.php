@@ -23,7 +23,11 @@
             'phone',
             'dob',
             'price',
-            'id_card'
+            'id_card',
+            'nationality',
+            'passport',
+            'date_of_birth',
+            'title'
         ];
 
         protected $casts = [

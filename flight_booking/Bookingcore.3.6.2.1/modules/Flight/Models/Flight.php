@@ -190,24 +190,19 @@
 
         public function addToCart(Request $request)
         {
-
-            $res = $this->addToCartValidate($request);
-            if ($res !== true) {
-                return $res;
-            }
-
-            // Add Booking
-            $total_guests = 0;
+          // Add Booking
             $total = 0;
-
+            $adults=intval($request->adults);
+            $infants=intval($request->infants);
+            $children=intval($request->children);
+            $total_guests=$adults+$infants+$children;
             $discount = 0;
-            if (!empty($request->flight_seat)) {
-                foreach ($request->flight_seat as $flight_seat) {
-                    $total_guests += $flight_seat['number'] ?? 0;
-                    $total += $flight_seat['number'] * $flight_seat['price'];
-                }
-            }
-
+                        foreach ($request['segments'] as $i => $seg) {
+                    $total += $adults * $seg['fare']['price_adult'];
+                    $total += $children * $seg['fare']['child_price'];
+                    $total += $infants * $seg['fare']['infant_price'];
+                
+        }
             //Buyer Fees for Admin
             $total_before_fees = $total;
             $total_buyer_fee = 0;
@@ -228,102 +223,39 @@
             $booking->status = 'draft';
             $booking->object_id = $request->input('service_id');
             $booking->object_model = $request->input('service_type');
-            $booking->vendor_id = $this->author_id;
             $booking->customer_id = Auth::id();
             $booking->total = $total;
             $booking->total_guests = $total_guests;
-            $booking->start_date = $this->departure_time->format('Y-m-d H:i:s');
-            $booking->end_date = $this->arrival_time->format('Y-m-d H:i:s');
-
             $booking->vendor_service_fee_amount = $total_service_fee ?? '';
             $booking->vendor_service_fee = $list_service_fee ?? '';
             $booking->buyer_fees = $list_buyer_fees ?? '';
             $booking->total_before_fees = $total_before_fees;
             $booking->total_before_discount = $total_before_fees;
 
-            $booking->calculateCommission();
-
-            if ($this->isDepositEnable()) {
-                $booking_deposit_fomular = $this->getDepositFomular();
-                $tmp_price_total = $booking->total;
-                if ($booking_deposit_fomular == "deposit_and_fee") {
-                    $tmp_price_total = $booking->total_before_fees;
-                }
-
-                switch ($this->getDepositType()) {
-                    case "percent":
-                        $booking->deposit = $tmp_price_total * $this->getDepositAmount() / 100;
-                        break;
-                    default:
-                        $booking->deposit = $this->getDepositAmount();
-                        break;
-                }
-                if ($booking_deposit_fomular == "deposit_and_fee") {
-                    $booking->deposit = $booking->deposit + $total_buyer_fee + $total_service_fee;
-                }
-            }
-
             $check = $booking->save();
+            foreach ($request['segments'] as $i => $seg) {
+    booking_flights::create([
+        'booking_id'      => $booking->id,
+        'fare_id'         => $seg['fare']['id'],
+        'flight_id'         => $seg['flight']['id'],
+        'adult_price'         => $seg['fare']['price_adult'],
+        'infant_price'         => $seg['fare']['infant_price'],
+        'child_price'         => $seg['fare']['child_price'],
+        'segment_number'  => $i,
+        // Add any additional info you want
+    ]);
+}
+
             if ($check) {
 
-                $this->bookingClass::clearDraftBookings();
-
-                $booking->addMeta('duration', $this->duration);
-                $booking->addMeta('base_price', $this->flightSeat()->min('price'));
-                $booking->addMeta('sale_price', $this->flightSeat()->min('price'));
-                $booking->addMeta('guests', $total_guests);
-                $booking->addMeta('flight_seat', $request->flight_seat);
-                if ($this->isDepositEnable()) {
-                    $booking->addMeta('deposit_info', [
-                        'type'    => $this->getDepositType(),
-                        'amount'  => $this->getDepositAmount(),
-                        'fomular' => $this->getDepositFomular(),
-                    ]);
-                }
-
-                // Add Room Booking
-                if (!empty($request->flight_seat)) {
-                    foreach ($request->flight_seat as $flight_seat) {
-                        for ($i = 1; $i <= $flight_seat['number']; $i++) {
-                            $bookingPassengers = new BookingPassengers();
-                            $bookingPassengers->fillByAttr([
-                                'flight_id',
-                                'flight_seat_id',
-                                'booking_id',
-                                'seat_type',
-                                'email',
-                                'first_name',
-                                'last_name',
-                                'phone',
-                                'dob',
-                                'price',
-                                'id_card'
-                            ], [
-                                'flight_id'      => $this->id,
-                                'flight_seat_id' => $flight_seat['id'],
-                                'booking_id'     => $booking->id,
-                                'seat_type'      => $flight_seat['seat_type']['code'],
-                                'email'          => $booking->email,
-                                'first_name'     => $booking->first_name,
-                                'last_name'      => $booking->last_name,
-                                'phone'          => $booking->phone,
-                                'dob'            => '',
-                                'price'          => $flight_seat['price'] ?? 0,
-                                'id_card'        => ''
-                            ]);
-                            $bookingPassengers->save();
-                        }
-
-                    }
-                }
-
                 return $this->sendSuccess([
-                    'url'          => $booking->getCheckoutUrl(),
+                    'url'          => $booking->getCheckoutUrl().'?adults='.$request->adults.'&infants='.$request->infants.'&children='.$request->children,
                     'booking_code' => $booking->code,
                 ]);
             }
             return $this->sendError(__("Can not check availability"));
         }
+        
 
         public function getPriceInRanges($start_date, $end_date)
         {
@@ -764,83 +696,80 @@
             return "book";
         }
 
-        public function search($request)
-        {
-            $orderBy = $request["orderby"] ?? "";
-            $query = self::query()->select(['bravo_flight.*'])->where('status','publish');
+public function search($request)
+{
+    // Build segment array for all trip types
+    $segments = [];
 
-            if (!empty($request['start']) and !empty($request['end'])) {
-                $start = strtotime($request['start']) < time() ? time() : strtotime($request['start']);
-                $end = strtotime($request['end']) < time() ? time() : strtotime($request['end']);
-                $query->where('departure_time', '>=', date('Y-m-d H:i:s ', $start));
-                $query->Where('departure_time', '<=', date('Y-m-d H:i:s ', $end));
-            } else{
-                $query->where('departure_time', '>=', date('Y-m-d H:i:s ',  time() ));
-            }
-
-            if (!empty($price_range = $request['price_range'] ?? "")) {
-                $pri_from = Currency::convertPriceToMain(explode(";", $price_range)[0]);
-                $pri_to =  Currency::convertPriceToMain(explode(";", $price_range)[1]);
-                $query->where('min_price','<=',$pri_to)->where('min_price','>=',$pri_from);
-
-            }else{
-                $query->whereHas('flightSeat');
-            }
-            if (!empty($request['from_where'])) {
-                $query->whereHas('airportFrom', function (Builder $builder) use ($request) {
-                    $builder->where('location_id', $request['from_where']);
-                });
-            }
-            if (!empty($request['to_where'])) {
-                $query->whereHas('airportTo', function (Builder $builder) use ($request) {
-                    $builder->where('location_id', $request['to_where']);
-                });
-            }
-            if (!empty($request['seat_type'])) {
-                $argv = array_filter($request['seat_type'], function ($v) {
-                    return $v != 0;
-                });
-                if (!empty($argv)) {
-                    $query->whereHas('flightSeat', function (Builder $builder) use ($argv) {
-                        foreach ($argv as $item => $value) {
-                            $builder->orWhere(function (Builder $query) use ($value, $item) {
-                                $query->where('seat_type', $item)->where('max_passengers', '>=', $value);
-                            });
-                        }
-                    });
-                }
-            }
-
-            if(!empty($request['attrs'])){
-                $this->filterAttrs($query,$request['attrs'],'bravo_flight_term');
-            }
-
-            if(!empty($request['is_featured']))
-            {
-                $query->where($this->table.'.is_featured',1);
-            }
-            if (!empty($request['custom_ids'])) {
-                $query->whereIn($this->table.".id", $request['custom_ids']);
-            }
-
-            if (!empty($request['custom_ids']) and !empty( $ids = array_filter($request['custom_ids']) )) {
-                $query->whereIn($this->table.".id", $ids);
-                $query->orderByRaw('FIELD (id, ' . implode(', ', $ids) . ') ASC');
-            }
-
-            switch ($orderBy) {
-                case "price_low_high":
-                    $query->orderBy($this->table.".min_price", "asc");
-                    break;
-                case "price_high_low":
-                    $query->orderBy($this->table.".min_price", "desc");
-                    break;
-                default:
-                    $query->orderBy($this->table.".id", "desc");
-            }
-
-            return $query->with(['flightSeat', 'airportFrom', 'airportTo', 'airline']);
+    if ($request['trip_type'] === 'multi_destination') {
+        $count = count($request['from_where']);
+        for ($i = 0; $i < $count; $i++) {
+            $segments[] = [
+                'from' => $request['from_where'][$i] ?? null,
+                'to' => $request['to_where'][$i] ?? null,
+                'start' => $request['start'][$i] ?? null,
+            ];
         }
+    } elseif ($request['trip_type'] === 'round_trip') {
+        // "from_where" and "to_where" are arrays of size 1, "start" has 2 dates [go, return]
+        $segments[] = [
+            'from' => $request['from_where'][0],
+            'to' => $request['to_where'][0],
+            'start' => $request['start'][0] ?? null,
+        ];
+        $segments[] = [
+            'from' => $request['to_where'][0],
+            'to' => $request['from_where'][0],
+            'start' => $request['start'][1] ?? null,
+        ];
+    } else { // one_way
+        $segments[] = [
+            'from' => $request['from_where'][0],
+            'to' => $request['to_where'][0],
+            'start' => $request['start'][0] ?? null,
+        ];
+    }
+
+    // Collect results for each segment
+    $results = [];
+    foreach ($segments as $seg) {
+        $q = self::query()->select(['bravo_flight.*'])
+            ->where('status', 'publish')
+            ->whereHas('airportFrom', function(Builder $builder) use ($seg) {
+                $builder->where('location_id', $seg['from']);
+            })
+            ->whereHas('airportTo', function(Builder $builder) use ($seg) {
+                $builder->where('location_id', $seg['to']);
+            });
+        // If a date is set, match only that day
+        if (!empty($seg['start'])) {
+            $date = date('Y-m-d', strtotime($seg['start']));
+            $q->whereDate('departure_time', '=', $date);
+        }
+
+
+        $results[] = $q->get();
+
+
+}
+        foreach($results as $r){
+            foreach($r as $flight){
+        $airport_from=Airport::find($flight['airport_from']);
+        $airport_to=Airport::find($flight['airport_to']);
+        $flight['airport_from_name']=$airport_from->name;
+        $flight['airport_to_name']=$airport_to->name;
+        $flight['location_from']=Location::find($airport_from->location_id)->name;
+        $flight['location_to']=Location::find($airport_to->location_id)->name;
+    }}
+    return $results; // Array of Eloquent collections, one per segment
+
+}
+ public  function get_airport_to(){
+return Airport::find($this->airport_to);
+}
+ public  function get_airport_from(){
+return Airport::find($this->airport_from);
+}
 
 
         public static function searchCustom(Request $request)

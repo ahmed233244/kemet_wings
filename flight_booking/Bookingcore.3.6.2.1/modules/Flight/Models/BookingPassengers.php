@@ -25,7 +25,8 @@
             'phone',
             'dob',
             'price',
-            'id_card'
+            'id_card',
+            'type'
         ];
         public function booking(){
             return $this->belongsTo(Booking::class,'booking_id');

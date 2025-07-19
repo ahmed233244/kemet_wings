@@ -21,6 +21,7 @@ use App\User;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\User\Models\Wallet\Transaction;
 use Modules\Booking\Models\BookingTimeSlots;
+use Modules\Flight\Models\booking_flights;
 
 class Booking extends BaseModel
 {
@@ -1076,4 +1077,10 @@ class Booking extends BaseModel
 
         }
     }
+    public function flights()
+{
+    return $this->hasMany(booking_flights::class);
+
 }
+}
+

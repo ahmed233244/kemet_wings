@@ -4,10 +4,9 @@
         <div class="form-date-search">
             <div class="date-wrapper">
                 <div class="check-in-wrapper">
-                    <label>{{ $field['title'] ?? "" }}</label>
+                    <label>From when</label>
                     <div class="render check-in-render font-size-14">{{Request::query('start',display_date(strtotime("today")))}}</div>
-                    <span> - </span>
-                    <div class="render check-out-render font-size-14">{{Request::query('end',display_date(strtotime("+7 day")))}}</div>
+
                 </div>
             </div>
             <input type="hidden" class="check-in-input" value="{{Request::query('start',display_date(strtotime("today")))}}" name="start">

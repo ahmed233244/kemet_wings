@@ -3,7 +3,7 @@ use Illuminate\Support\Facades\Route;
 // Booking
 Route::group(['prefix'=>config('booking.booking_route_prefix')],function(){
     Route::post('/addToCart','BookingController@addToCart');
-    Route::post('/doCheckout','BookingController@doCheckout')->name('booking.doCheckout');
+    Route::post('/doCheckout','BookingController@doCheckout')->name('booking.doCheckout')->middleware(['api']);
     Route::get('/confirm/{gateway}','BookingController@confirmPayment')->name('booking.confirm-payment');
     Route::get('/cancel/{gateway}','BookingController@cancelPayment');
     Route::get('/{code}','BookingController@detail');
@@ -17,6 +17,7 @@ Route::group(['prefix'=>config('booking.booking_route_prefix')],function(){
     Route::post('/setPaidAmount','BookingController@setPaidAmount')->name('booking.setPaidAmount')->middleware(['auth']);
 
     Route::get('/modal/{booking}','BookingController@modal')->name('booking.modal');
+    Route::get('/ticket/{booking}','BookingController@ticket')->name('booking.ticket');
 
     Route::post('/storeNoteBooking','BookingController@storeNoteBooking');
 });

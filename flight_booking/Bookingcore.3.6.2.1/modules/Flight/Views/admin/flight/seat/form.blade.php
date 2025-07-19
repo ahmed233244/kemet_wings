@@ -21,17 +21,30 @@
 </div>
 <div class="col-md-12">
     <div class="form-group">
-        <label>{{__("Price")}} <span class="text-danger">*</span></label>
-        <input type="number" required value="{{$row->price}}" min="1" placeholder="{{__("Price")}}" name="price" class="form-control">
+        <label>{{__("Adult Price")}} <span class="text-danger">*</span></label>
+        <input type="number" required value="{{$row->price}}" min="1" placeholder="{{__("Adult Price")}}" name="price" class="form-control">
     </div>
 </div>
+<div class="col-md-12">
+    <div class="form-group">
+        <label>{{__("Child Price")}} <span class="text-danger">*</span></label>
+        <input type="number" required value="{{$row->child_price}}" min="1" placeholder="{{__("Child Price")}}" name="child_price" class="form-control">
+    </div>
+</div>
+<div class="col-md-12">
+    <div class="form-group">
+        <label>{{__("Infant Price")}} <span class="text-danger">*</span></label>
+        <input type="number" required value="{{$row->infant_price}}" min="1" placeholder="{{__("Infant Price")}}" name="infant_price" class="form-control">
+    </div>
+</div>
+
 <div class="col-md-12">
     <div class="form-group">
         <label>{{__("Max passengers")}} <span class="text-danger">*</span></label>
         <input type="number" required value="{{$row->max_passengers ?? 1}}" min="1" max="100" placeholder="{{__("Number")}}" name="max_passengers" class="form-control">
     </div>
 </div>
-<div class="col-md-12">
+<div class="col-md-12"style='display:none'>
     <div class="form-group">
         <label>{{__("Person type")}} <span class="text-danger">*</span></label>
         <select name="person" class="form-control" id="">

@@ -7,7 +7,7 @@ $minValue = 0;
 		<i class="field-icon icofont-ticket"></i>
 		<div class="form-content dropdown-toggle" data-toggle="dropdown">
 			<div class="wrapper-more">
-				<label> {{ $field['title'] }} </label>
+				<label>  </label>
 				@php
 					$seatTypeGet = request()->query('seat_type',[]);
 				@endphp

@@ -110,7 +110,7 @@ class AuthController extends Controller
                 'phone'    => $request->input('phone'),
             ]);
             event(new Registered($user));
-            //Auth::loginUsingId($user->id);
+            Auth::loginUsingId($user->id);
             try {
                 event(new SendMailUserRegistered($user));
             } catch (Exception $exception) {

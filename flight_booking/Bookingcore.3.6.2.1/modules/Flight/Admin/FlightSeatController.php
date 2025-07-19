@@ -154,13 +154,15 @@
                     })->ignore($row)
                 ],
                 'price'=>'required',
+                'child_price'=>'required',
+                'infant_price'=>'required',
                 'max_passengers'=>'required',
             ]);
             if ($validator->fails()) {
                 return redirect()->back()->with(['errors' => $validator->errors()]);
             }
             $dataKeys = [
-                'seat_type','price','max_passengers','person','baggage_check_in','baggage_cabin'
+                'seat_type','price','child_price','infant_price','max_passengers','person','baggage_check_in','baggage_cabin'
             ];
 
             if($this->hasPermission('flight_manage_others')){

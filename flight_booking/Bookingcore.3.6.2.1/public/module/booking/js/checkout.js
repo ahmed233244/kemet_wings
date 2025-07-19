@@ -44,7 +44,7 @@
                         }
 
                         if(res.url){
-                            window.location.href = res.url
+                           return window.location.href = res.url
                         }
 
                         if(res.errors && typeof res.errors == 'object')

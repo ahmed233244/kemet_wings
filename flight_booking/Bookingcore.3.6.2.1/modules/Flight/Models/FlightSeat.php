@@ -15,7 +15,7 @@
         use HasFactory;
 
         protected $table = 'bravo_flight_seat';
-        protected $fillable=['seat_type','flight_id','price','max_passengers','person','baggage_check_in','baggage_cabin'];
+        protected $fillable=['seat_type','flight_id','price','infant_price','child_price','max_passengers','person','baggage_check_in','baggage_cabin'];
 
         public function flight()
         {

@@ -51,21 +51,7 @@ class FlightController extends Controller
             $limit = !empty(setting_item("flight_page_limit_item"))? setting_item("flight_page_limit_item") : 9;
         }
         $query = $this->flightClass->search($request->input());
-        $list = $query->paginate($limit);
-        $markers = [];
-        if (!empty($list) and $for_map) {
-            foreach ($list as $row) {
-                $markers[] = [
-                    "id"      => $row->id,
-                    "title"   => $row->title,
-                    "lat"     => (float)$row->map_lat,
-                    "lng"     => (float)$row->map_lng,
-                    "gallery" => $row->getGallery(true),
-                    "infobox" => view('Flight::frontend.layouts.search.loop-grid', ['row' => $row,'disable_lazyload'=>1,'wrap_class'=>'infobox-item'])->render(),
-                    'marker' => get_file_url(setting_item("flight_icon_marker_map"),'full') ?? url('images/icons/png/pin.png'),
-                ];
-            }
-        }
+        $list=$query;
         $data = [
             'rows' => $list,
             'layout'=>$layout
@@ -85,7 +71,6 @@ class FlightController extends Controller
             'list_location'      => $this->locationClass::where('status', 'publish')->limit(1000)->with(['translation'])->get()->toTree(),
             'seatType'           => SeatType::get(),
             'flight_min_max_price' => $this->flightClass::getMinMaxPrice(),
-            'markers'            => $markers,
             "blank" => setting_item('search_open_tab') == "current_tab" ? 0 : 1 ,
             "seo_meta"           => $this->flightClass::getSeoMetaForPageList(),
             'layout'=>$layout

@@ -72,7 +72,6 @@ class BookingController extends \App\Http\Controllers\Controller
         }
 
         $is_api = request()->segment(1) == 'api';
-
         $data = [
             'page_title' => __('Checkout'),
             'booking'    => $booking,
@@ -183,16 +182,12 @@ class BookingController extends \App\Http\Controllers\Controller
 
         $messages = [];
         $rules = [
-            'first_name'      => 'required|string|max:255',
-            'last_name'       => 'required|string|max:255',
             'email'           => 'required|string|email|max:255',
             'phone'           => 'required|string|max:255',
             'country'         => 'required',
             'term_conditions' => 'required',
         ];
-
-
-        $confirmRegister = $request->input('confirmRegister');
+        $confirmRegister =$request->input('password');
         if (!empty($confirmRegister)) {
             $rules['password'] = 'required|string|confirmed|min:6|max:255';
             $rules['email'] = ['required', 'email', 'max:255', Rule::unique('users')];
@@ -249,15 +244,12 @@ class BookingController extends \App\Http\Controllers\Controller
         }
 
         // Normal Checkout
-        $booking->first_name = $request->input('first_name');
-        $booking->last_name = $request->input('last_name');
+        $input = $request->input('passengers', []);
+        
+        $booking->first_name = $input[1]['first_name'];
+        $booking->last_name = $input[1]['last_name'];
         $booking->email = $request->input('email');
         $booking->phone = $request->input('phone');
-        $booking->address = $request->input('address_line_1');
-        $booking->address2 = $request->input('address_line_2');
-        $booking->city = $request->input('city');
-        $booking->state = $request->input('state');
-        $booking->zip_code = $request->input('zip_code');
         $booking->country = $request->input('country');
         $booking->customer_notes = $request->input('customer_notes');
         $booking->gateway = $payment_gateway;
@@ -320,32 +312,23 @@ class BookingController extends \App\Http\Controllers\Controller
 
         if (Auth::check()) {
             $user = auth()->user();
-            $user->first_name = $request->input('first_name');
-            $user->last_name = $request->input('last_name');
+            $user->first_name = $input[1]['first_name'];
+            $user->last_name = $input[1]['last_name'];
             $user->phone = $request->input('phone');
-            $user->address = $request->input('address_line_1');
-            $user->address2 = $request->input('address_line_2');
-            $user->city = $request->input('city');
-            $user->state = $request->input('state');
-            $user->zip_code = $request->input('zip_code');
             $user->country = $request->input('country');
             $user->save();
         } elseif (!empty($confirmRegister)) {
-            $user = new User();
-            $user->first_name = $request->input('first_name');
-            $user->last_name = $request->input('last_name');
+            $user = \App\User::create();
+            $user->first_name = $input[1]['first_name'];
+            $user->last_name = $input[1]['last_name'];
             $user->email = $request->input('email');
             $user->phone = $request->input('phone');
-            $user->address = $request->input('address_line_1');
-            $user->address2 = $request->input('address_line_2');
-            $user->city = $request->input('city');
-            $user->state = $request->input('state');
-            $user->zip_code = $request->input('zip_code');
             $user->country = $request->input('country');
-            $user->password = bcrypt($request->input('password'));
+            $user->password = Hash::make($request->input('password'));
             $user->status = 'publish';
             $user->save();
-
+            $booking->customer_id=$user->id;
+            $booking->save();
             event(new Registered($user));
             Auth::loginUsingId($user->id);
             try {
@@ -408,8 +391,11 @@ class BookingController extends \App\Http\Controllers\Controller
                     'booking_id' => $booking->id,
                     'first_name' => $input[$i]['first_name'] ?? '',
                     'last_name'  => $input[$i]['last_name'] ?? '',
-                    'email'      => $input[$i]['email'] ?? '',
-                    'phone'      => $input[$i]['phone'] ?? '',
+                    'date_of_birth'      => $input[$i]['date_of_birth'] ?? '',
+                    'passport'      => $input[$i]['passport'] ?? '',
+                    'type'      => $input[$i]['type'] ?? '',
+                    'nationality'      => $input[$i]['nationality'] ?? '',
+                    'title'      => $input[$i]['title'] ?? '',
                 ];
                 $data = $booking->service->filterPassengerData($data, $booking, $request, $i);
                 $passenger->fillByAttr(array_keys($data), $data);
@@ -477,13 +463,6 @@ class BookingController extends \App\Http\Controllers\Controller
             return $this->sendError(__("You have to verify email first"), ['url' => url('/email/verify')]);
         }
 
-        $validator = Validator::make($request->all(), [
-            'service_id'   => 'required|integer',
-            'service_type' => 'required'
-        ]);
-        if ($validator->fails()) {
-            return $this->sendError('', ['errors' => $validator->errors()]);
-        }
         $service_type = $request->input('service_type');
         $service_id = $request->input('service_id');
         $allServices = get_bookable_services();
@@ -491,7 +470,7 @@ class BookingController extends \App\Http\Controllers\Controller
             return $this->sendError(__('Service type not found'));
         }
         $module = $allServices[$service_type];
-        $service = $module::find($service_id);
+        $service = $module::all()[0];
         if (empty($service) or !is_subclass_of($service, '\\Modules\\Booking\\Models\\Bookable')) {
             return $this->sendError(__('Service not found'));
         }
@@ -699,4 +678,11 @@ class BookingController extends \App\Http\Controllers\Controller
 
         return view('Booking::frontend.detail.modal', ['booking' => $booking, 'service' => $booking->service]);
     }
+        public function ticket(Booking $booking)
+    {
+        if (!is_admin() and $booking->vendor_id != auth()->id() and $booking->customer_id != auth()->id()) abort(404);
+
+        return view('Booking::frontend.detail.ticket', ['booking' => $booking, 'service' => $booking->service]);
+    }
 }
+
