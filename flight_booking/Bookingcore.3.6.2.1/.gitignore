@@ -7,6 +7,7 @@ public/dist/admin
 /public/uploads/0000
 /storage/*.key
 storage/app/*
+storage/debugbar/
 !storage/app/public/
 storage/app/public/*
 !storage/app/public/demo/
