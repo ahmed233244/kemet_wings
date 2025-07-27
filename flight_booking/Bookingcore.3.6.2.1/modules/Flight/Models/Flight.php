@@ -52,6 +52,7 @@
             'airline_id',
             'status',
             'min_price',
+            'group',
         ];
         protected $seo_type = 'flight';
 

@@ -34,6 +34,36 @@
                     <input type="text" placeholder="{{__("Your Phone")}}" class="form-control" value="{{$user->phone ?? ''}}" name="phone">
                 </div>
             </div>
+            <div class="col-md-6 field-address-line-1">
+                <div class="form-group">
+                    <label >{{__("Address line 1")}} </label>
+                    <input type="text" placeholder="{{__("Address line 1")}}" class="form-control" value="{{$user->address ?? ''}}" name="address_line_1">
+                </div>
+            </div>
+            <div class="col-md-6 field-address-line-2">
+                <div class="form-group">
+                    <label >{{__("Address line 2")}} </label>
+                    <input type="text" placeholder="{{__("Address line 2")}}" class="form-control" value="{{$user->address2 ?? ''}}" name="address_line_2">
+                </div>
+            </div>
+            <div class="col-md-6 field-city">
+                <div class="form-group">
+                    <label >{{__("City")}} </label>
+                    <input type="text" class="form-control" value="{{$user->city ?? ''}}" name="city" placeholder="{{__("Your City")}}">
+                </div>
+            </div>
+            <div class="col-md-6 field-state">
+                <div class="form-group">
+                    <label >{{__("State/Province/Region")}} </label>
+                    <input type="text" class="form-control" value="{{$user->state ?? ''}}" name="state" placeholder="{{__("State/Province/Region")}}">
+                </div>
+            </div>
+            <div class="col-md-6 field-zip-code">
+                <div class="form-group">
+                    <label >{{__("ZIP code/Postal code")}} </label>
+                    <input type="text" class="form-control" value="{{$user->zip_code ?? ''}}" name="zip_code" placeholder="{{__("ZIP code/Postal code")}}">
+                </div>
+            </div>
             <div class="col-md-6 field-country">
                 <div class="form-group">
                     <label >{{__("Country of Residence")}} <span class="required">*</span> </label>

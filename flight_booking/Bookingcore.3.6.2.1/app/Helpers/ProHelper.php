@@ -2,7 +2,7 @@
 function isPro()
 {
     if (class_exists('\App\Pro\Pro')) {
-        return \App\Pro\Pro::isPro();
+        return false;
     }
     return false;
 }
@@ -10,7 +10,7 @@ function isPro()
 function isProEnable()
 {
     if (class_exists('\App\Pro\Pro')) {
-        return \App\Pro\Pro::isEnable();
+        return false;
     }
     return false;
 }

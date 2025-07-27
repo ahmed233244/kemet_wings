@@ -19,6 +19,7 @@
     use Modules\Location\Models\LocationCategory;
     use Modules\Flight\Models\Flight;
     use Modules\Flight\Models\FlightTerm;
+    use Illuminate\Support\Carbon;
 
     class FlightController extends AdminController
     {
@@ -183,63 +184,165 @@
             return view('Flight::admin.detail', $data);
         }
 
-        public function store(Request $request, $id)
-        {
-
-            if ($id > 0) {
-                $this->checkPermission('flight_update');
-                $row = $this->flight::find($id);
-                if (empty($row)) {
-                    return redirect(route('flight.admin.index'));
-                }
-
-                if ($row->author_id != Auth::id() and !$this->hasPermission('flight_manage_others')) {
-                    return redirect(route('flight.admin.index'));
-                }
-            } else {
-                $this->checkPermission('flight_create');
-                $row = new $this->flight();
-                $row->status = "publish";
+public function store(Request $request, $id)
+{
+    $dataKeys = [
+        'title',
+        'code',
+        'departure_time',
+        'arrival_time',
+        'duration',
+        'airport_from',
+        'airport_to',
+        'airline_id',
+        'status',
+        'group',
+    ];
+    if ($id > 0) {
+                    $this->checkPermission('flight_update');
+            $row = Flight::find($id);
+            if (empty($row)) {
+                return redirect(route('flight.admin.index'));
             }
 
+            if($row->author_id != Auth::id() and !$this->hasPermission('flight_manage_others'))
+            {
+                return redirect(route('flight.admin.index'));
+            }
+            $row->fillByAttr($dataKeys,$request->input());
+            $row->save();
+            return redirect(route('flight.admin.index'))->with('success');
+    } else {
+        $this->checkPermission('flight_create');
+        $status = setting_item("flight_vendor_create_service_must_approved_by_admin", 0) 
+            ? "pending" 
+            : "publish";
 
-            $validator = Validator::make($request->all(), [
-                'departure_time'=>'required',
-                'arrival_time'=>'required',
-                'duration'=>'required',
-                'airport_from'=>'required',
-                'airport_to'=>'required',
-                'airline_id'=>'required',
-            ]);
-            if ($validator->fails()) {
-                return redirect()->back()->with(['errors' => $validator->errors()]);
-            }
-            $dataKeys = [
-                'title',
-                'code',
-                'departure_time',
-                'arrival_time',
-                'duration',
-                'airport_from',
-                'airport_to',
-                'airline_id',
-                'status',
-            ];
-            if ($this->hasPermission('flight_manage_others')) {
-                $dataKeys[] = 'author_id';
-            }
-
-            $row->fillByAttr($dataKeys, $request->input());
-            $res = $row->save();
-            if ($res) {
-                $this->saveTerms($row,$request);
-                if ($id > 0) {
-                    return back()->with('success', __('Flight updated'));
-                } else {
-                    return redirect(route('flight.admin.edit', $row->id))->with('success', __('Flight created'));
-                }
-            }
+        // Handle bulk flight creation
+        if ($request->input('recurring_day')) {
+            return $this->handleBulkCreation($request, $status);
         }
+
+        // Handle single flight creation
+        return $this->handleSingleCreation($request, $status);
+    }
+}
+
+protected function handleBulkCreation($request, $status)
+{
+    $validator = Validator::make($request->all(), [
+        'departure_time' => 'required',
+        'arrival_time' => 'required',
+        'duration' => 'required',
+        'airport_from' => 'required',
+        'airport_to' => 'required',
+        'airline_id' => 'required',
+        'starts_at' => 'required|date',
+        'ends_at' => 'required|date|after_or_equal:starts_at',
+        'recurring_day' => 'required|array',
+    ]);
+
+    if ($validator->fails()) {
+        return redirect()->back()->with(['errors' => $validator->errors()]);
+    }
+
+
+
+    $time_departure = date('H:i', strtotime($request->input('departure_time')));
+    $time_arrival = date('H:i', strtotime($request->input('arrival_time')));
+    $starts_at = Carbon::parse($request->input('starts_at'));
+    $ends_at = Carbon::parse($request->input('ends_at'));
+    $recurring_days = $request->input('recurring_day');
+
+    $dataKeys = [
+        'title',
+        'code',
+        'duration',
+        'airport_from',
+        'airport_to',
+        'airline_id',
+    ];
+
+    $commonData = $request->only($dataKeys);
+    $commonData['status'] = $status;
+    $commonData['author_id'] = Auth::id();
+
+    $count = 0;
+    $currentDate = $starts_at->copy();
+
+    while ($currentDate <= $ends_at) {
+        $dayName = $currentDate->format('l');
+
+        
+        if (in_array($dayName, $recurring_days)) {
+            $departureDateTime = $currentDate->format('Y-m-d') . ' ' . $time_departure;
+            $arrivalDateTime = $currentDate->format('Y-m-d') . ' ' . $time_arrival;
+
+            $flight = new Flight();
+            $flight->fill($commonData);
+            $flight->departure_time = $departureDateTime;
+            $flight->arrival_time = $arrivalDateTime;
+            $flight->group=$request->input('group');
+            $flight->save();
+
+            if (!$request->input('lang') || is_default_lang($request->input('lang'))) {
+                $this->saveTerms($flight, $request);
+            }
+
+            event(new CreatedServicesEvent($flight));
+            $count++;
+        }
+        $currentDate->addDay();
+    }
+
+    return redirect(route('flight.admin.index'))->with('success', __(':count flights created', ['count' => $count]));
+}
+
+protected function handleSingleCreation($request, $status)
+{
+    $validator = Validator::make($request->all(), [
+        'departure_time' => 'required',
+        'arrival_time' => 'required',
+        'duration' => 'required',
+        'airport_from' => 'required',
+        'airport_to' => 'required',
+        'airline_id' => 'required',
+    ]);
+
+    if ($validator->fails()) {
+        return redirect()->back()->with(['errors' => $validator->errors()]);
+    }
+
+    $row = new Flight();
+    $row->status = $status;
+    $row->author_id = Auth::id();
+
+ 
+
+    $dataKeys = [
+        'title',
+        'code',
+        'departure_time',
+        'arrival_time',
+        'duration',
+        'airport_from',
+        'airport_to',
+        'airline_id',
+        'status',
+    ];
+
+    $row->fillByAttr($dataKeys, $request->input());
+    $res = $row->save();
+
+    if ($res) {
+        if (!$request->input('lang') || is_default_lang($request->input('lang'))) {
+            $this->saveTerms($row, $request);
+        }
+
+        event(new CreatedServicesEvent($row));
+       return redirect(route('flight.admin.index'))->with('success');
+    }
+}
         public function saveTerms($row, $request)
         {
             $this->checkPermission('flight_manage_attributes');

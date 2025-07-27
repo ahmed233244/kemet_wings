@@ -1,12 +1,12 @@
 <tr>
     <td class="booking-history-type">
-        @if($service = $booking->service)
+        @if($service = $booking->flights->first->flight->flight)
             <i class="{{$service->getServiceIconFeatured()}}"></i>
         @endif
         <small>{{$booking->object_model}}</small>
     </td>
     <td>
-        @if($service = $booking->service)
+        @if($service = $booking->flights->first->flight->flight)
             {!! clean($service->title) !!}
             ({!! clean($service->code) !!})
         @else
@@ -21,13 +21,11 @@
 
     </td>
     <td>{{format_money($booking->total)}}</td>
-    <td>{{format_money($booking->paid)}}</td>
-    <td>{{format_money($booking->total - $booking->paid)}}</td>
     <td class="{{$booking->status}} a-hidden">{{$booking->statusName}}</td>
     <td width="2%">
         @if($service = $booking->service)
-            <a class="btn btn-xs btn-primary btn-info-booking" data-ajax="{{route('booking.modal',['booking'=>$booking])}}" data-toggle="modal" data-id="{{$booking->id}}" data-target="#modal_booking_detail">
-                <i class="fa fa-info-circle"></i>{{__("Details")}}
+            <a class="btn btn-xs btn-primary btn-info-booking" href="{{route('booking.ticket',['booking'=>$booking])}}">
+                <i class="fa fa-info-circle"></i>{{__("Tickets")}}
             </a>
         @endif
         <a href="{{route('user.booking.invoice',['code'=>$booking->code])}}" class="btn btn-xs btn-primary btn-info-booking open-new-window mt-1" onclick="window.open(this.href); return false;">

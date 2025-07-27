@@ -18,8 +18,10 @@
     <title>Slim Flight Search</title>
     <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <style>
         :root {
             --primary: #2563eb;
@@ -30,12 +32,10 @@
             width:0px !important
         }
         .flight-form-container {
-
             width: 100%;
             background: white;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             border: 1px solid var(--border);
-
         }
         
         .form-title {
@@ -44,21 +44,20 @@
             margin-bottom: 15px;
             color: #1e293b;
         }
-    .g-button-submit {
-flex: 0 0 100% !important;
-        max-width: 100% !important;
-
-}
-    .bravo_wrap .bravo_form .g-button-submit button {
-        border-radius: 5px !important;
-        display: inline-block !important;
-        font-weight: 400 !important;
-        height: auto !important;
-        margin: 10px 15px !important;
-        padding: 8px 15px !important; 
-        position: relative;
-        width: auto !important;
-    }
+        .g-button-submit {
+            flex: 0 0 100% !important;
+            max-width: 100% !important;
+        }
+        .bravo_wrap .bravo_form .g-button-submit button {
+            border-radius: 5px !important;
+            display: inline-block !important;
+            font-weight: 400 !important;
+            height: auto !important;
+            margin: 10px 15px !important;
+            padding: 8px 15px !important; 
+            position: relative;
+            width: auto !important;
+        }
         
         .trip-selector {
             display: flex;
@@ -68,9 +67,9 @@ flex: 0 0 100% !important;
             width: 50%;
         }
 
-    .g-button-submit {
-        text-align: center !important;
-    }
+        .g-button-submit {
+            text-align: center !important;
+        }
 
         .trip-option {
             flex: 1;
@@ -144,10 +143,10 @@ flex: 0 0 100% !important;
             font-weight: 500;
         }
         .bravo_wrap .bravo_form .g-field-search {
-    flex: 0 0 100% !important;
-    flex-grow: 1;
-    max-width: 100% !important;
-}
+            flex: 0 0 100% !important;
+            flex-grow: 1;
+            max-width: 100% !important;
+        }
         
         .btn-add {
             background-color: transparent;
@@ -201,13 +200,53 @@ flex: 0 0 100% !important;
         .changable3{
             margin-left:20%
         }
+        
+        /* Passenger selector styles */
+        .passenger-minus, .passenger-plus {
+            height: auto !important;
+        }
+        .passenger-selector-trigger {
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: white;
+        }
+        .passenger-selector-dropdown {
+            background-color: white;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            top: 100%;
+            left: 0;
+        }
+        .passenger-count {
+            background-color: #fff;
+            border-left: none;
+            border-right: none;
+            font-weight: bold;
+            height: 32px;
+        }
+        .passenger-minus, .passenger-plus {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-color: #ced4da;
+        }
+        .passenger-minus:hover, .passenger-plus:hover {
+            background-color: #f8f9fa;
+        }
+        .passenger-done {
+            padding: 5px 15px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="flight-form-container mx-auto">
-
-            
             <form action="{{ route('flight.search') }}" class="form bravo_form" method="get">
                 <!-- Trip Type Selection -->
                 <div class="trip-selector">
@@ -230,106 +269,121 @@ flex: 0 0 100% !important;
                         <!-- Segment Row Template -->
                         <div class="segment-row first-segment-row flight-segment-row">
                             <span class="segment-number">1</span>
-                            <div class="row changable3"id='changable3'>
+                            <div class="row changable3" id='changable3'>
                                 <div class="col-md-3 mb-2 mb-md-0">
-@include('Flight::frontend.layouts.search.fields.from-where')
-                                </div>
-                                <div class="col-md-3 mb-2 mb-md-0">
-                                   
-@include('Flight::frontend.layouts.search.fields.to-where')
-                                </div>
-                                <div class="col-md-3 mb-2 mb-md-0"style='margin-left: -2%;'>
-                                <div class="form-group">
-                                    <div class="form-content">
-                                    <label class="form-label">Departure</label>
-                                    <input required style="height:25px !important;color:#5191fa !important" name="start[]" type="date" class="form-control">
+                                    <div class="form-group">
+                                        <i class="field-icon icofont-paper-plane" style="left:15px !important;position:absolute"></i>
+                                        <div class="form-content">
+                                            <label class="form-label">From Where</label>
+                                            <select required class="form-select select2-location from-where-select" name="from_where[]" data-placeholder="Select location">
+                                                <option value="">Select origin</option>
+                                                @foreach($locationOptions as $option)
+                                                    <option value="{{ $option['id'] }}">{{ $option['text'] }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
+                                <div class="col-md-3 mb-2 mb-md-0">
+                                    <div class="form-group">
+                                        <i class="field-icon icofont-paper-plane" style="left:15px !important;position:absolute"></i>
+                                        <div class="form-content">
+                                            <label class="form-label">To Where</label>
+                                            <select required class="form-select select2-location to-where-select" name="to_where[]" data-placeholder="Select location">
+                                                <option value="">Select destination</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col-md-3 return-date-col d-none"style='margin-left: -2%;'>
-                                     <div class="form-group">
-                                    <div class="form-content">
-                                    <label class="form-label">Return</label>
-                                    <input  style="height:25px !important;color:#5191fa !important" name="start[]" type="date" class="form-control">
+                                <div class="col-md-3 mb-2 mb-md-0" style='margin-left: -2%;'>
+                                    <div class="form-group">
+                                        <div class="form-content">
+                                            <label class="form-label">Departure</label>
+                                            <input required style="height:25px !important;color:#5191fa !important" name="start[]" type="date" class="form-control date-input">
+                                        </div>
+                                    </div>
                                 </div>
-                                </div>
+                                <div class="col-md-3 return-date-col d-none" style='margin-left: -2%;'>
+                                    <div class="form-group">
+                                        <div class="form-content">
+                                            <label class="form-label">Return</label>
+                                            <input style="height:25px !important;color:#5191fa !important" name="end[]" type="date" class="form-control return-date-input">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                                            <button type="button" class="btn-add add-segment-btn d-none">
-                        <i class="fa fa-plus"></i> Add another flight
-                    </button>
+                        <button type="button" class="btn-add add-segment-btn d-none">
+                            <i class="fa fa-plus"></i> Add another flight
+                        </button>
                     </div>
-                    
-
                     
                     <!-- Passengers Section -->
                     <div class="passengers-section">
                         <div class="section-title">Passengers</div>
                         <div class="row">
-   <div class="card mb-4">
-    <div class="card-body">
-
-        <div class="position-relative">
-            <!-- Passenger selector trigger -->
-            <div class="form-control passenger-selector-trigger" style="cursor: pointer;">
-                <span class="passenger-summary">1 Adult</span>
-                <i class="fa fa-chevron-down float-end mt-1"></i>
-            </div>
-            
-            <!-- Passenger selector dropdown -->
-            <div class="card passenger-selector-dropdown shadow-sm" style="display: none; position: absolute; width: 100%; z-index: 1000;">
-                <div class="card-body">
-                    <div class="row mb-3">
-                        <div class="col-8">
-                            <label class="form-label fw-bold">Adults</label>
-                            <small class="text-muted">12+ years</small>
-                        </div>
-                        <div class="col-4">
-                            <div class="input-group">
-                                <button class="btn btn-outline-secondary passenger-minus" type="button" data-type="adults">-</button>
-                                <input type="text" class="form-control text-center passenger-count" name="adults" value="1" min="1" max="9" readonly>
-                                <button class="btn btn-outline-secondary passenger-plus" type="button" data-type="adults">+</button>
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <div class="position-relative">
+                                        <!-- Passenger selector trigger -->
+                                        <div class="form-control passenger-selector-trigger" style="cursor: pointer;">
+                                            <span class="passenger-summary">1 Adult</span>
+                                            <i class="fa fa-chevron-down float-end mt-1"></i>
+                                        </div>
+                                        
+                                        <!-- Passenger selector dropdown -->
+                                        <div class="card passenger-selector-dropdown shadow-sm" style="display: none; position: absolute; width: 100%; z-index: 1000;">
+                                            <div class="card-body">
+                                                <div class="row mb-3">
+                                                    <div class="col-8">
+                                                        <label class="form-label fw-bold">Adults</label>
+                                                        <small class="text-muted">12+ years</small>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="input-group">
+                                                            <button class="btn btn-outline-secondary passenger-minus" type="button" data-type="adults">-</button>
+                                                            <input type="number" class="form-control text-center passenger-count" name="adults" value="1" min="1" >
+                                                            <button class="btn btn-outline-secondary passenger-plus" type="button" data-type="adults">+</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="row mb-3">
+                                                    <div class="col-8">
+                                                        <label class="form-label fw-bold">Children</label>
+                                                        <small class="text-muted">2-11 years</small>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="input-group">
+                                                            <button class="btn btn-outline-secondary passenger-minus" type="button" data-type="children">-</button>
+                                                            <input type="number" class="form-control text-center passenger-count" name="children" value="0" min="0">
+                                                            <button class="btn btn-outline-secondary passenger-plus" type="button" data-type="children">+</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="row">
+                                                    <div class="col-8">
+                                                        <label class="form-label fw-bold">Infants</label>
+                                                        <small class="text-muted">Under 2 years</small>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="input-group">
+                                                            <button class="btn btn-outline-secondary passenger-minus" type="button" data-type="infants">-</button>
+                                                            <input type="number" class="form-control text-center passenger-count" name="infants" value="0" min="0" >
+                                                            <button class="btn btn-outline-secondary passenger-plus" type="button" data-type="infants">+</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="d-flex justify-content-end mt-3">
+                                                    <button class="btn btn-primary btn-sm passenger-done">Done</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row mb-3">
-                        <div class="col-8">
-                            <label class="form-label fw-bold">Children</label>
-                            <small class="text-muted">2-11 years</small>
-                        </div>
-                        <div class="col-4">
-                            <div class="input-group">
-                                <button class="btn btn-outline-secondary passenger-minus" type="button" data-type="children">-</button>
-                                <input type="text" class="form-control text-center passenger-count" name="children" value="0" min="0" max="9" readonly>
-                                <button class="btn btn-outline-secondary passenger-plus" type="button" data-type="children">+</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-8">
-                            <label class="form-label fw-bold">Infants</label>
-                            <small class="text-muted">Under 2 years</small>
-                        </div>
-                        <div class="col-4">
-                            <div class="input-group">
-                                <button class="btn btn-outline-secondary passenger-minus" type="button" data-type="infants">-</button>
-                                <input type="text" class="form-control text-center passenger-count" name="infants" value="0" min="0" max="9" readonly>
-                                <button class="btn btn-outline-secondary passenger-plus" type="button" data-type="infants">+</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="d-flex justify-content-end mt-3">
-                        <button class="btn btn-primary btn-sm passenger-done">Done</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
                         </div>
                     </div>
                 </div>
@@ -341,40 +395,349 @@ flex: 0 0 100% !important;
                 </div>
             </form>
         </div>
-    </div><script>
-                const tripTypeRadios = document.querySelectorAll('input[name="trip_type"]');
-            const tripOptions = document.querySelectorAll('.trip-option');
-            const returnDateCol = document.querySelector('.return-date-col');
-            const addSegmentBtn = document.querySelector('.add-segment-btn');
-            const segmentsContainer = document.getElementById('flight-search-segments');
-            const changable = document.getElementById('changable3');
-    function updateRemoveButtons() {
-    const rows = segmentsContainer.querySelectorAll('.segment-row');
-    rows.forEach((row, idx) => {
-        const btn = row.querySelector('.remove-segment');
-        if (btn) btn.remove(); // Remove any existing button
-        if (rows.length > 1 && idx === rows.length - 1) {
-            // Only add remove button to the last row if more than one row
-            const removeBtn = document.createElement('button');
-            removeBtn.type = 'button';
-            removeBtn.className = 'remove-segment btn btn-link text-danger';
-            removeBtn.style = 'position:absolute;top:8px;right:10px;';
-            removeBtn.innerHTML = '&times;';
-            removeBtn.onclick = function() {
-                row.remove();
-                updateRemoveButtons();
-            };
-            row.appendChild(removeBtn);
+    </div>
+
+    <script>
+        // Map location names to airport codes
+        const cityToAirportMap = {
+            "Cairo": "CAI",
+            "Luxor": "LXR",
+            "Aswan": "ASW",
+            "Sharm El Sheikh": "SSH"
+        };
+
+        // Flight schedule data structure
+        const flightSchedule = {
+            // CAI routes
+            "CAI": {
+                "LXR": ["Monday", "Saturday"],
+                "ASW": ["Friday", "Wednesday"]
+            },
+            // ASW routes
+            "ASW": {
+                "CAI": ["Friday", "Wednesday"],
+                "SSH": ["Friday", "Monday"]
+            },
+            // LXR routes
+            "LXR": {
+                "CAI": ["Monday", "Saturday"],
+                "SSH": ["Friday", "Monday"]
+            },
+            // SSH routes
+            "SSH": {
+                "LXR": ["Friday", "Monday"],
+                "ASW": ["Friday", "Monday"]
+            }
+        };
+
+        // Flight start dates
+        const flightStartDates = {
+            "CAI-LXR": ["2025-10-06", "2025-10-04"],
+            "CAI-ASW": ["2025-10-03", "2025-10-01"],
+            "ASW-CAI": ["2025-10-03", "2025-10-01"],
+            "LXR-CAI": ["2025-10-06", "2025-10-04"],
+            "SSH-LXR": ["2025-10-03", "2025-10-06"],
+            "SSH-ASW": ["2025-10-03", "2025-10-06"],
+            "LXR-SSH": ["2025-10-03", "2025-10-06"],
+            "ASW-SSH": ["2025-10-03", "2025-10-06"]
+        };
+
+        // Create a mapping from location ID to airport code
+        const locationCodeMap = {};
+        window.locationOptions = @json($locationOptions);
+        window.locationOptions.forEach(option => {
+            // Map city name to airport code
+            const cityName = option.text.trim();
+            locationCodeMap[option.id] = cityToAirportMap[cityName] || cityName;
+        });
+
+        // Get available dates for a route
+        function getAvailableDates(origin, destination) {
+            const route = `${origin}-${destination}`;
+            const days = flightSchedule[origin]?.[destination] || [];
+            const startDates = flightStartDates[route] || [];
+            
+            let availableDates = [];
+            const today = new Date();
+            const endDate = new Date();
+            endDate.setFullYear(endDate.getFullYear() + 10); // 1 year from now
+
+            days.forEach(day => {
+                const dayIndex = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].indexOf(day);
+                
+                startDates.forEach(start => {
+                    const startDate = new Date(start);
+                    let current = new Date(startDate);
+                    
+                    // Adjust to the next occurrence of the day
+                    if (current.getDay() !== dayIndex) {
+                        current.setDate(current.getDate() + (dayIndex - current.getDay() + 7) % 7);
+                    }
+                    
+                    // Generate dates for next year
+                    while (current <= endDate) {
+                        if (current >= today) {
+                            availableDates.push(current.toISOString().split('T')[0]);
+                        }
+                        current.setDate(current.getDate() + 7);
+                    }
+                });
+            });
+
+            // Remove duplicates and sort
+            return [...new Set(availableDates)].sort();
         }
-    });
+
+        // Update destination options based on origin
+        function updateDestinationOptions(originSelect) {
+            const row = originSelect.closest('.segment-row');
+            const toSelect = row.querySelector('.to-where-select');
+            const originId = originSelect.value;
+            const originCode = locationCodeMap[originId];
+            
+            if (!originCode || !flightSchedule[originCode]) {
+                toSelect.innerHTML = '<option value="">Select destination</option>';
+                return;
+            }
+            
+            // Get viable destinations
+            const viableDestinations = Object.keys(flightSchedule[originCode]);
+            
+            // Find location IDs that match viable destinations
+            const options = window.locationOptions.filter(option => {
+                const destCode = locationCodeMap[option.id];
+                return viableDestinations.includes(destCode);
+            });
+            
+            // Update destination dropdown
+            toSelect.innerHTML = '<option value="">Select destination</option>' +
+                options.map(option => 
+                    `<option value="${option.id}">${option.text}</option>`
+                ).join('');
+            
+            // Initialize Select2 if not already initialized
+            if (!$(toSelect).hasClass('select2-hidden-accessible')) {
+                $(toSelect).select2({
+                    width: '100%',
+                    placeholder: 'Select destination'
+                });
+            }
+            
+            // Trigger change to update date picker
+            $(toSelect).trigger('change');
+        }
+
+        // Initialize date picker with available dates
+ // Initialize date picker with available dates and auto-select first date
+function initDatePicker(dateInput, origin, destination) {
+    const originCode = locationCodeMap[origin];
+    const destinationCode = locationCodeMap[destination];
+    
+    if (!originCode || !destinationCode) {
+        // Reset to regular date input if no valid route
+        if (dateInput._flatpickr) {
+            dateInput._flatpickr.destroy();
+        }
+        dateInput.type = 'text';
+        dateInput.type = 'date';
+        return;
+    }
+    
+    const availableDates = getAvailableDates(originCode, destinationCode);
+    
+    // Destroy existing Flatpickr instance if it exists
+    if (dateInput._flatpickr) {
+        dateInput._flatpickr.destroy();
+    }
+    
+    // Only initialize Flatpickr if we have available dates
+    if (availableDates.length > 0) {
+        const fp = flatpickr(dateInput, {
+            enable: availableDates,
+            minDate: "today",
+            dateFormat: "Y-m-d",
+            disableMobile: "true",
+            onChange: function(selectedDates, dateStr, instance) {
+                if (dateInput.classList.contains('return-date-input')) {
+                    const departureInput = dateInput.closest('.segment-row').querySelector('.date-input');
+                    if (departureInput && departureInput.value && dateStr < departureInput.value) {
+                        instance.setDate(departureInput.value);
+                    }
+                }
+            },
+            onReady: function(selectedDates, dateStr, instance) {
+                // Auto-select the first available date
+                if (availableDates.length > 0 && !dateInput.value) {
+                    instance.setDate(availableDates[0]);
+                }
+            }
+        });
+        
+        // Set the first available date if none is selected
+        if (availableDates.length > 0 && !dateInput.value) {
+            fp.setDate(availableDates[0]);
+        }
+    } else {
+        // Fallback to regular date input if no available dates
+        dateInput.type = 'text';
+        dateInput.type = 'date';
+    }
 }
 
-// Call after page load to set up the first row
-updateRemoveButtons();
-        window.locationOptions = @json($locationOptions);
-  
+// Update date picker when route changes
+function updateDatePicker(row) {
+    const originSelect = row.querySelector('.from-where-select');
+    const toSelect = row.querySelector('.to-where-select');
+    const dateInput = row.querySelector('.date-input');
+    const returnDateInput = row.querySelector('.return-date-input');
+    
+    // Reset date inputs if no valid selection
+    if (!originSelect.value || !toSelect.value) {
+        if (dateInput && dateInput._flatpickr) {
+            dateInput._flatpickr.destroy();
+        }
+        if (dateInput) {
+            dateInput.type = 'text';
+            dateInput.type = 'date';
+            dateInput.value = '';
+        }
+        if (returnDateInput && returnDateInput._flatpickr) {
+            returnDateInput._flatpickr.destroy();
+        }
+        if (returnDateInput) {
+            returnDateInput.type = 'text';
+            returnDateInput.type = 'date';
+            returnDateInput.value = '';
+        }
+        return;
+    }
+    
+    // Initialize departure date picker
+    if (dateInput) {
+        initDatePicker(dateInput, originSelect.value, toSelect.value);
+    }
+    
+    // Initialize return date picker if it exists (for round trips)
+    if (returnDateInput) {
+        initDatePicker(returnDateInput, toSelect.value, originSelect.value);
+    }
+}
+        // Update return date picker when departure date changes
+        function updateReturnDatePicker(row) {
+            const departureInput = row.querySelector('.date-input');
+            const returnInput = row.querySelector('.return-date-input');
+            
+            if (!departureInput || !returnInput || !returnInput._flatpickr) return;
+            
+            if (departureInput.value && returnInput.value < departureInput.value) {
+                returnInput._flatpickr.setDate(departureInput.value);
+            }
+        }
 
-            let segmentIndex = 1;
+        // Create a new segment row
+        function createSegmentRow(index) {
+            const newRow = document.createElement('div');
+            newRow.className = 'segment-row flight-segment-row';
+            newRow.innerHTML = `
+                <span class="segment-number">${index + 1}</span>
+                <div class="row changable3">
+                    <div class="col-md-3 mb-2 mb-md-0">
+                        <div class="form-group">
+                            <i class="field-icon icofont-paper-plane" style="left:15px !important;position:absolute"></i>
+                            <div class="form-content">
+                                <label class="form-label">From Where</label>
+                                <select required class="form-select select2-location from-where-select" name="from_where[]" data-placeholder="Select location">
+                                    <option value="">Select origin</option>
+                                    ${window.locationOptions.map(opt => `<option value="${opt.id}">${opt.text}</option>`).join('')}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-2 mb-md-0">
+                        <div class="form-group">
+                            <i class="field-icon icofont-paper-plane" style="left:15px !important;position:absolute"></i>
+                            <div class="form-content">
+                                <label class="form-label">To Where</label>
+                                <select required class="form-select select2-location to-where-select" name="to_where[]" data-placeholder="Select location">
+                                    <option value="">Select destination</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-2 mb-md-0" style="margin-left: -2%;">
+                        <div class="form-group">
+                            <div class="form-content">
+                                <label class="form-label">Departure</label>
+                                <input required style="height:25px !important;color:#5191fa !important" name="start[]" type="date" class="form-control date-input">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="remove-segment btn btn-link text-danger" style="position:absolute;top:8px;right:10px;">&times;</button>
+            `;
+            
+            // Initialize Select2 for the new selects
+            $(newRow).find('.select2-location').select2({
+                width: '100%',
+                placeholder: 'Select location'
+            });
+            
+            // Set up event handlers
+            $(newRow).find('.from-where-select').on('change', function() {
+                updateDestinationOptions(this);
+                updateDatePicker(this.closest('.segment-row'));
+            });
+            
+            $(newRow).find('.to-where-select').on('change', function() {
+                updateDatePicker(this.closest('.segment-row'));
+            });
+            
+            $(newRow).find('.date-input').on('change', function() {
+                updateReturnDatePicker(this.closest('.segment-row'));
+            });
+            
+            return newRow;
+        }
+
+        // Update remove buttons visibility
+        function updateRemoveButtons() {
+            const rows = document.querySelectorAll('.segment-row');
+            rows.forEach((row, idx) => {
+                const btn = row.querySelector('.remove-segment');
+                if (btn) btn.remove(); // Remove any existing button
+                
+                // Only show remove button on the last row when there are multiple rows
+                if (rows.length > 1 && idx === rows.length - 1) {
+                    const removeBtn = document.createElement('button');
+                    removeBtn.type = 'button';
+                    removeBtn.className = 'remove-segment btn btn-link text-danger';
+                    removeBtn.style = 'position:absolute;top:8px;right:10px;';
+                    removeBtn.innerHTML = '&times;';
+                    removeBtn.onclick = function() {
+                        row.remove();
+                        updateRemoveButtons();
+                    };
+                    row.appendChild(removeBtn);
+                }
+            });
+        }
+
+        // Initialize form
+        $(document).ready(function() {
+            // Initialize Select2 for location selects
+            $('.select2-location').select2({
+                width: '100%',
+                placeholder: 'Select location'
+            });
+            
+            // Initialize first segment
+            updateDestinationOptions(document.querySelector('.from-where-select'));
+            
+            // Trip type radio buttons
+            const tripTypeRadios = document.querySelectorAll('input[name="trip_type"]');
+            const tripOptions = document.querySelectorAll('.trip-option');
+            const addSegmentBtn = document.querySelector('.add-segment-btn');
+            const changable = document.getElementById('changable3');
             
             // Update trip option active state
             function updateTripOptionActive() {
@@ -391,28 +754,51 @@ updateRemoveButtons();
             // Update form based on trip type
             function updateForm() {
                 const selected = document.querySelector('input[name="trip_type"]:checked').value;
+                const returnDateCols = document.querySelectorAll('.return-date-col');
+                const addSegmentBtn = document.querySelector('.add-segment-btn');
                 
                 // Update UI for trip options
                 updateTripOptionActive();
                 
                 if (selected === 'one_way') {
-                    returnDateCol.classList.add('d-none');
+                    // Hide return dates and add segment button
+                    returnDateCols.forEach(col => col.classList.add('d-none'));
                     addSegmentBtn.classList.add('d-none');
-                    changable.classList.add('changable3');
+                    
                     // Remove extra segments if any
                     document.querySelectorAll('.segment-row:not(.first-segment-row)').forEach(row => row.remove());
+                    
+                    // Make sure return date inputs are not required
+                    document.querySelectorAll('.return-date-input').forEach(input => input.removeAttribute('required'));
                 } else if (selected === 'round_trip') {
-                    changable.classList.remove('d-none');
-                    returnDateCol.classList.remove('d-none');
-                    returnDateCol.getElementsByTagName('input')[0].setAttribute('required','true')
+                    // Show return dates but hide add segment button
+                    returnDateCols.forEach(col => col.classList.remove('d-none'));
                     addSegmentBtn.classList.add('d-none');
-                    changable.classList.remove('changable3');
+                    
+                    // Remove extra segments if any
                     document.querySelectorAll('.segment-row:not(.first-segment-row)').forEach(row => row.remove());
+                    
+                    // Make return date inputs required
+                    document.querySelectorAll('.return-date-input').forEach(input => input.setAttribute('required', 'true'));
+                    
+                    // Update date pickers for return flights
+                    document.querySelectorAll('.segment-row').forEach(row => {
+                        const originSelect = row.querySelector('.from-where-select');
+                        const toSelect = row.querySelector('.to-where-select');
+                        if (originSelect.value && toSelect.value) {
+                            updateDatePicker(row);
+                        }
+                    });
                 } else if (selected === 'multi_destination') {
-                    returnDateCol.classList.add('d-none');
+                    // Hide return dates and show add segment button
+                    returnDateCols.forEach(col => col.classList.add('d-none'));
                     addSegmentBtn.classList.remove('d-none');
-                    changable.classList.add('changable3');
+                    
+                    // Make sure return date inputs are not required
+                    document.querySelectorAll('.return-date-input').forEach(input => input.removeAttribute('required'));
                 }
+                
+                updateRemoveButtons();
             }
             
             // Set initial state
@@ -432,212 +818,111 @@ updateRemoveButtons();
                 });
             });
             
-            // Set initial state
-function createSegmentRow(index) {
-    // Build select options HTML
-    let optionsHtml = '<option value="">City or airport</option>';
-    window.locationOptions.forEach(function(opt) {
-        optionsHtml += `<option value="${opt.id}">${opt.text}</option>`;
-    });
-
-    // Build the row HTML
-    const row = document.createElement('div');
-    row.className = 'segment-row flight-segment-row';
-    row.innerHTML = `
-        <span class="segment-number">${index + 1}</span>
-        <div class="row changable3" id="changable3">
-            <div class="col-md-3 mb-2 mb-md-0">
-                <div class="form-group">
-                    <i class="field-icon icofont-paper-plane" style="left:15px !important;position:absolute"></i>
-                    <div class="form-content">
-                        <label class="form-label">From Where</label>
-                        <select required class="form-select select2-location" name="from_where[]" id="select2-location-from${index}" data-placeholder="Select location">
-                            ${optionsHtml}
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-2 mb-md-0">
-                <div class="form-group">
-                    <i class="field-icon icofont-paper-plane" style="left:15px !important;position:absolute"></i>
-                    <div class="form-content">
-                        <label class="form-label">To Where</label>
-                        <select required class="form-select select2-location" name="to_where[]" id="select2-location-to${index}" data-placeholder="Select location">
-                            ${optionsHtml}
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-2 mb-md-0" style="margin-left: -2%;">
-                <div class="form-group">
-                    <div class="form-content">
-                        <label class="form-label">Departure</label>
-                        <input required style="height:25px !important;color:#5191fa !important" name="start[]" type="date" class="form-control">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <button type="button" class="remove-segment btn btn-link text-danger" style="position:absolute;top:8px;right:10px;">&times;</button>
-    `;
-    // Remove button event
-    
-    row.querySelector('.remove-segment').onclick = function() {
-        row.remove();
-    };
-    return row;
-}
-            
             // Add segment button
-addSegmentBtn.addEventListener('click', function () {
-    const segmentRows = segmentsContainer.querySelectorAll('.segment-row');
-    const newIndex = segmentRows.length;
-    console.log(newIndex)
-    const newRow = createSegmentRow(newIndex);
-    addSegmentBtn.parentNode.insertBefore(newRow, addSegmentBtn);
-
-    // Initialize Select2 for new selects
-    $(newRow).find('.select2-location').select2({
-        width: '100%',
-        placeholder: 'Select location'
-    });
-    updateRemoveButtons();
-});
-
+            addSegmentBtn.addEventListener('click', function() {
+                const segmentRows = document.querySelectorAll('.segment-row');
+                const newIndex = segmentRows.length;
+                const newRow = createSegmentRow(newIndex);
+                addSegmentBtn.parentNode.insertBefore(newRow, addSegmentBtn);
+                updateRemoveButtons();
+            });
+            
+            // Event delegation for dynamic elements
+            $(document).on('change', '.from-where-select', function() {
+                updateDestinationOptions(this);
+                updateDatePicker(this.closest('.segment-row'));
+            });
+            
+            $(document).on('change', '.to-where-select', function() {
+                updateDatePicker(this.closest('.segment-row'));
+            });
+            
+            $(document).on('change', '.date-input', function() {
+                updateReturnDatePicker(this.closest('.segment-row'));
+            });
+            
+            // Passenger selector functionality
+            $('.passenger-selector-trigger').on('click', function(e) {
+                e.stopPropagation();
+                $('.passenger-selector-dropdown').toggle();
+            });
+            
+            $(document).on('click', function() {
+                $('.passenger-selector-dropdown').hide();
+            });
+            
+            $('.passenger-selector-dropdown').on('click', function(e) {
+                e.stopPropagation();
+            });
+            
+            $('.passenger-plus').on('click', function(e) {
+                e.stopPropagation();
+                const type = $(this).data('type');
+                const input = $(this).siblings('.passenger-count');
+                let value = parseInt(input.val());
+                input.val(value + 1);
+                updatePassengerSummary();
+                updatePassengerLimits();
+            });
+                        $('.passenger-count').on('keyup', function(e) {
+                updatePassengerSummary();
+                updatePassengerLimits();
+            });
+                                    $('.passenger-count').on('change', function(e) {
+                updatePassengerSummary();
+                updatePassengerLimits();
+            });
+            
+            $('.passenger-minus').on('click', function(e) {
+                e.stopPropagation();
+                const type = $(this).data('type');
+                const input = $(this).siblings('.passenger-count');
+                let value = parseInt(input.val());
+                const min = parseInt(input.attr('min'));
+                
+                if (value > min) {
+                    input.val(value - 1);
+                    updatePassengerSummary();
+                    updatePassengerLimits();
+                }
+            });
+            
+            // Update passenger summary text
+            function updatePassengerSummary() {
+                const adults = parseInt($('input[name="adults"]').val());
+                const children = parseInt($('input[name="children"]').val());
+                const infants = parseInt($('input[name="infants"]').val());
+                
+                let summary = `${adults} Adult${adults !== 1 ? 's' : ''}`;
+                if (children > 0) summary += `, ${children} Child${children !== 1 ? 'ren' : ''}`;
+                if (infants > 0) summary += `, ${infants} Infant${infants !== 1 ? 's' : ''}`;
+                
+                $('.passenger-summary').text(summary);
+            }
+            
+            // Ensure there's at least 1 adult and infants don't exceed adults
+            function updatePassengerLimits() {
+                const adults = parseInt($('input[name="adults"]').val());
+                const infants = parseInt($('input[name="infants"]').val());
+                
+                // Ensure infants don't exceed adults
+                if (infants > adults) {
+                    $('input[name="infants"]').val(adults);
+                }
+                
+                // Update max values
+                $('input[name="infants"]').attr('max', adults);
+                updatePassengerSummary();
+            }
+            
+            // Done button
+            $('.passenger-done').on('click', function() {
+                $('.passenger-selector-dropdown').hide();
+            });
+            
+            // Initialize passenger summary
+            updatePassengerSummary();
+        });
     </script>
-    <script>
-$(document).ready(function() {
-    // Toggle passenger dropdown
-    $('.passenger-selector-trigger').on('click', function(e) {
-        e.stopPropagation();
-        $('.passenger-selector-dropdown').toggle();
-    });
-    
-    // Close when clicking elsewhere
-    $(document).on('click', function() {
-        $('.passenger-selector-dropdown').hide();
-    });
-    
-    // Prevent dropdown close when clicking inside
-    $('.passenger-selector-dropdown').on('click', function(e) {
-        e.stopPropagation();
-    });
-    
-    // Passenger counter functionality
-    $('.passenger-plus').on('click', function(e) {
-        e.stopPropagation();
-        const type = $(this).data('type');
-        const input = $(this).siblings('.passenger-count');
-        let value = parseInt(input.val());
-        const max = parseInt(input.attr('max'));
-        
-        if (value < max) {
-            input.val(value + 1);
-            updatePassengerSummary();
-            updatePassengerLimits();
-        }
-    });
-    
-    $('.passenger-minus').on('click', function(e) {
-        e.stopPropagation();
-        const type = $(this).data('type');
-        const input = $(this).siblings('.passenger-count');
-        let value = parseInt(input.val());
-        const min = parseInt(input.attr('min'));
-        
-        if (value > min) {
-            input.val(value - 1);
-            updatePassengerSummary();
-            updatePassengerLimits();
-        }
-    });
-    
-    // Update passenger summary text
-    function updatePassengerSummary() {
-        const adults = parseInt($('input[name="adults"]').val());
-        const children = parseInt($('input[name="children"]').val());
-        const infants = parseInt($('input[name="infants"]').val());
-        
-        let summary = `${adults} Adult${adults !== 1 ? 's' : ''}`;
-        if (children > 0) summary += `, ${children} Child${children !== 1 ? 'ren' : ''}`;
-        if (infants > 0) summary += `, ${infants} Infant${infants !== 1 ? 's' : ''}`;
-        
-        $('.passenger-summary').text(summary);
-    }
-    
-    // Ensure there's at least 1 adult and infants don't exceed adults
-    function updatePassengerLimits() {
-        const adults = parseInt($('input[name="adults"]').val());
-        const infants = parseInt($('input[name="infants"]').val());
-        
-        // Ensure infants don't exceed adults
-        if (infants > adults) {
-            $('input[name="infants"]').val(adults);
-        }
-        
-        // Update max values
-        $('input[name="infants"]').attr('max', adults);
-        updatePassengerSummary();
-    }
-    
-    // Done button
-    $('.passenger-done').on('click', function() {
-        $('.passenger-selector-dropdown').hide();
-    });
-    
-    // Initialize
-    updatePassengerSummary();
-});
-</script>
-
-<style>
-    .passenger-minus, .passenger-plus {
-        height: auto !important;
-    }
-.passenger-selector-trigger {
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: white;
-}
-
-.passenger-selector-dropdown {
-    background-color: white;
-    border: 1px solid #dee2e6;
-    border-radius: 5px;
-    top: 100%;
-    left: 0;
-}
-
-.passenger-count {
-    background-color: #fff;
-    border-left: none;
-    border-right: none;
-    font-weight: bold;
-    height: 32px;
-}
-
-.passenger-minus, .passenger-plus {
-    width: 32px;
-    height: 32px;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-color: #ced4da;
-}
-
-.passenger-minus:hover, .passenger-plus:hover {
-    background-color: #f8f9fa;
-}
-
-.card-title i {
-    color: #0d6efd;
-}
-
-.passenger-done {
-    padding: 5px 15px;
-    font-size: 14px;
-}
-</style>
 </body>
+</html>

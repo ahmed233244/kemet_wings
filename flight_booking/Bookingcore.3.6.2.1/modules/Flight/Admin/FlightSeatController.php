@@ -132,6 +132,9 @@
 
             $this->hasFlightPermission($flight_id);
             if($id>0){
+                if($this->currentFlight->group){
+                    
+                }
                 $this->checkPermission('flight_update');
                 $row = $this->flight_seat::find($id);
                 if (empty($row)) {
@@ -168,9 +171,19 @@
             if($this->hasPermission('flight_manage_others')){
                 $dataKeys[] = 'author_id';
             }
+            if($this->currentFlight->group){
+                $flights=Flight::where('group',$this->currentFlight->group)->get();
+                foreach($flights as $f){
+            $row = new $this->flight_seat();
+            $row->fillByAttr($dataKeys,$request->input());
+            $row->flight_id = $f->id;
+            $res = $row->save();
+                }
+            }else{
             $row->fillByAttr($dataKeys,$request->input());
             $row->flight_id = $this->currentFlight->id;
             $res = $row->save();
+            }
             if ($res) {
                 return redirect(route('flight.admin.flight.seat.edit',['flight_id'=>$flight_id,'id'=>$row->id]))->with('success', __('Flight seat saved') );
             }

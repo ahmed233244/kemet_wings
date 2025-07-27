@@ -97,7 +97,6 @@
         }
 
         public function store( Request $request, $id ){
-
             if($id>0){
                 $this->checkPermission('flight_update');
                 $row = $this->seatType::find($id);

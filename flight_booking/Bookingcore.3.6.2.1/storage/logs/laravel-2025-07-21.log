@@ -1,0 +1,8 @@
+[2025-07-21 08:36:28] app_debug.ERROR: Maximum execution time of 60 seconds exceeded {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Maximum execution time of 60 seconds exceeded at C:\\Users\\PC\\Documents\\flight_booking\\Bookingcore.3.6.2.1\\vendor\\composer\\ClassLoader.php:429)
+[stacktrace]
+#0 {main}
+"} 
+[2025-07-21 13:50:52] app_debug.ERROR: Maximum execution time of 60 seconds exceeded {"userId":18,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Maximum execution time of 60 seconds exceeded at C:\\Users\\PC\\Documents\\flight_booking\\Bookingcore.3.6.2.1\\vendor\\composer\\ClassLoader.php:429)
+[stacktrace]
+#0 {main}
+"} 

@@ -40,61 +40,67 @@
 <script>
   // Shared segments & booking data
   const ticket = {
-    airline: "Egyptair",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/2/23/EgyptAir_Logo.svg",
     recordLocator: "CGFKMF",
-    ticketClass: "Economy (Y)",
-    segments: [
-      {
-        from: "Cairo (CAI)", to: "Aswan (ASW)", flight: "MS 247", date: "Friday 13 June 2025",
-        depTime: "08:00", arrTime: "09:25", terminal: "3", class: "Economy (Y)",
-        baggage: "1PC", status: "Confirmed"
-      }
-    ],
+    ticketid:"{{$booking->code}}",
+    segments: <?php 
+    $flights=$booking->flights;
+  foreach($flights as $flight){
+    $flight['flight']=$flight->flight;
+    $flight['seat']=$flight->fare;
+    $flight['airport_from']=$flight->flight->get_airport_from()->name;
+    $flight['airport_to']=$flight->flight->get_airport_to()->name;
+  }
+  echo(json_encode($flights));
+  ?>,
     footer: "If you have any queries, contact reservation@skylineegypttours.com"
   };
 
   // Each passenger gets their own ticket
-  const passengers = [
-    { name: "Zehnder, Matthew James", ticketNumber: "MS 0773439283786", baggage: "1PC", seat: "" },
-    { name: "Zehnder, Andrew James", ticketNumber: "MS 0773439283787", baggage: "1PC", seat: "" },
-    { name: "Zehnder, Julie Meredith", ticketNumber: "MS 0773439283788", baggage: "1PC", seat: "" },
-    { name: "Zehnder, Hayley Rachel", ticketNumber: "MS 0773439283789", baggage: "1PC", seat: "" }
-  ];
+  const passengers = <?php 
+  echo(json_encode($booking->passengers));
+  ?>
 
-  function createTicket(passenger, idx) {
-    let segmentRows = "";
-    ticket.segments.forEach(s =>
-      segmentRows += `<tr>
-        <td>${s.from}</td>
-        <td>${s.to}</td>
-        <td>${s.flight}</td>
-        <td>${s.date}</td>
-        <td>${s.depTime}</td>
-        <td>${s.arrTime}</td>
-        <td>${s.terminal || "-"}</td>
-        <td>${s.class || "-"}</td>
-        <td>${s.baggage || "-"}</td>
-        <td>${s.status}</td>
-      </tr>`
-    );
+function createTicket(passenger, idx) {
+  let segmentRows = "";
+
+  ticket.segments.forEach(s => {
+    const arrival_date = new Date(s.flight.arrival_time);
+    const departure_date = new Date(s.flight.departure_time);
+    segmentRows += `<tr>
+      <td>${s.airport_from}</td>
+      <td>${s.airport_to}</td>
+      <td>${arrival_date.toLocaleString('en-GB')}</td>
+      <td>${departure_date.toLocaleString('en-GB')}</td>
+      <td>${s.seat.seat_type || "-"}</td>
+      <td>${s.seat.baggage_cabin || "-"} Kg</td>
+    </tr>`;
+  });
+
     return `
     <div class="ticket-container" id="ticket${idx}">
       <span class="powered">Powered by Skyline</span>
       <div class="ticket-header">
-        <img src="${ticket.logo}" class="airline-logo" alt="Airline Logo"/>
+                       <a href="{{url(app_get_locale(false,'/'))}}" class="bravo-logo">
+                    @php
+                        $logo_id = setting_item("logo_id");
+                        if(!empty($row->custom_logo)){
+                            $logo_id = $row->custom_logo;
+                        }
+                    @endphp
+                    @if($logo_id)
+                        <?php $logo = get_file_url($logo_id,'full') ?>
+                        <img height='40px' src="{{$logo}}" alt="{{setting_item("site_title")}}">
+                    @endif
+                </a>
         <div>
-          <div class="airline-name">${ticket.airline}</div>
-          <div class="record-locator">Record Locator: ${ticket.recordLocator}</div>
+          <div class="airline-name">Kemet Wings</div>
         </div>
-        <span class="ticket-badge">${ticket.ticketClass}</span>
       </div>
       <div class="section-title"><i class="bi bi-person"></i> Passenger Details</div>
       <table class="details-table">
-        <tr><th>Name</th><td>${passenger.name}</td></tr>
-        <tr><th>Ticket Number</th><td>${passenger.ticketNumber || "-"}</td></tr>
-        <tr><th>Baggage</th><td>${passenger.baggage || "-"}</td></tr>
-        <tr><th>Seat</th><td>${passenger.seat || "-"}</td></tr>
+        <tr><th>Name</th><td>${passenger.first_name}</td></tr>
+        <tr><th>Name</th><td>${passenger.last_name}</td></tr>
+        <tr><th>Ticket Number</th><td>${ticket.ticketid}_${passenger.id}</td></tr>
       </table>
       <div class="section-title"><i class="bi bi-airplane"></i> Flight Segment(s)</div>
       <table class="segment-table">
@@ -102,32 +108,15 @@
           <tr>
             <th>From</th>
             <th>To</th>
-            <th>Flight</th>
-            <th>Date</th>
-            <th>Departure</th>
             <th>Arrival</th>
-            <th>Terminal</th>
-            <th>Class</th>
+            <th>Departure</th>
+            <th>Seat</th>
             <th>Baggage</th>
-            <th>Status</th>
           </tr>
         </thead>
         <tbody>${segmentRows}</tbody>
       </table>
-      <div class="barcode">
-        <svg width="140" height="42">
-          <rect x="10" y="5" width="12" height="32" fill="#bbb"/>
-          <rect x="24" y="5" width="5" height="32" fill="#245fae"/>
-          <rect x="32" y="5" width="3" height="32" fill="#bbb"/>
-          <rect x="37" y="5" width="15" height="32" fill="#245fae"/>
-          <rect x="54" y="5" width="7" height="32" fill="#bbb"/>
-          <rect x="63" y="5" width="12" height="32" fill="#245fae"/>
-          <rect x="77" y="5" width="5" height="32" fill="#bbb"/>
-          <rect x="84" y="5" width="6" height="32" fill="#245fae"/>
-          <rect x="92" y="5" width="4" height="32" fill="#bbb"/>
-          <rect x="98" y="5" width="14" height="32" fill="#245fae"/>
-        </svg>
-      </div>
+
       <button class="download-btn" onclick="printTicket('ticket${idx}')"><i class="bi bi-download"></i> Download Ticket</button>
       <div class="ticket-footer">${ticket.footer}</div>
     </div>

@@ -101,6 +101,44 @@
                         <input type="text" name="arrival_time" class="form-control has-datetimepicker" value="{{old("arrival_time",$row->arrival_time)}}" placeholder="{{__("Arrival time")}}">
                     </div>
                 </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label class="control-label">Add Bulk</label>
+                        <input type="checkbox" name="add_bulk" class="form-control" value="" placeholder="{{__("Add Bulk")}}">
+                    </div>
+                </div>
+                                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label class="control-label">Starts At</label>
+                        <input type="date" name="starts_at" class="form-control" value="" placeholder="{{__("Starts At")}}">
+                    </div>
+                </div>
+                                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label class="control-label">Ends at</label>
+                        <input type="date" name="ends_at" class="form-control" value="" placeholder="{{__("Ends At")}}">
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label class="control-label">Recurring Day</label>
+                        <select  name="recurring_day[]" class="form-control" value="" placeholder="{{__("Recurring Day")}}" multiple>
+                            <option value="Sunday">Sunday</option>
+                            <option value="Monday">Monday</option>
+                            <option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option>
+                            <option value="Thursday">Thursday</option>
+                            <option value="Friday">Friday</option>
+                            <option value="Saturday">Saturday</option>
+                        </select>
+                    </div>
+                </div>
+                                                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label class="control-label">Group</label>
+                        <input type="text" name="group" class="form-control" value="" placeholder="{{__("Group")}}">
+                    </div>
+                </div>
                 <div class="col-lg-6 d-none">
                     <div class="form-group">
                         <label class="control-label">{{__("Duration")}}</label>

@@ -637,16 +637,19 @@
     <header>
         <div class="container">
             <div class="header-content">
-                <div class="logo">
-                    <div class="logo-icon">
-                        <i class="fas fa-plane"></i>
-                    </div>
-                    <div class="logo-text">AirConnect</div>
-                </div>
+                <a href="{{url(app_get_locale(false,'/'))}}" class="bravo-logo">
+                    @php
+                        $logo_id = setting_item("logo_id");
+                        if(!empty($row->custom_logo)){
+                            $logo_id = $row->custom_logo;
+                        }
+                    @endphp
+                    @if($logo_id)
+                        <?php $logo = get_file_url($logo_id,'full') ?>
+                        <img height='70px' src="{{$logo}}" alt="{{setting_item("site_title")}}">
+                    @endif
+                </a>
                 <div class="header-actions">
-                    <button class="btn-outline">
-                        <i class="fas fa-user"></i> Sign In
-                    </button>
                     <button class="btn-primary">
                         <i class="fas fa-globe"></i> EN
                     </button>
@@ -705,9 +708,8 @@
     </footer>
 
 <script>
-// ---- DUMMY DATA START ----
 const tripData = {
-  trip_type: "{{$_REQUEST['trip_type']}}", // Try changing this to "multi_destination" or "one_way"
+  trip_type: "{{$_REQUEST['trip_type']}}",
   from_where: {!! json_encode($_REQUEST['from_where']) !!},
   to_where: {!! json_encode($_REQUEST['to_where']) !!},
   start: {!! json_encode($_REQUEST['start']) !!},
@@ -723,11 +725,7 @@ function formatDate(d) {
   if (isNaN(dt)) return d;
   return dt.toLocaleDateString('en-US', { day:'2-digit', month:'short', year:'numeric' });
 }
-
-// ---- SEGMENT DATA UNIFIER ----
 function getSegments() {
-
-    // Handle multi-destination/one-way as before
     return (tripData.from_where || []).map((from, i) => ({
       from: from,
       to: tripData.to_where[i],
@@ -777,13 +775,13 @@ function renderTripSummary() {
         <div class="segment-date">${formatDate(seg.date)}</div>
       </div>
       <div class="segment-route">
-        <div class="segment-airports">${seg.flights[0].airport_from_name}</div>
+        <div class="segment-airports">${seg.flights[0]?.airport_from_name ?? ''}</div>
         <div class="segment-line"><i class="fas fa-plane segment-plane"></i></div>
-        <div class="segment-airports">${seg.flights[0].airport_to_name}</div>
+        <div class="segment-airports">${seg.flights[0]?.airport_to_name ?? ''}</div>
       </div>
       <div class="segment-cities">
-        <div>${seg.flights[0].location_from}</div>
-        <div>${seg.flights[0].location_to}</div>
+        <div>${seg.flights[0]?.location_from ?? ''}</div>
+        <div>${seg.flights[0]?.location_to ?? ''}</div>
       </div>
       <div class="segment-duration">${seg.flights[0]?.duration || ""}</div>
     </div>
@@ -806,6 +804,31 @@ function renderFlightSegments() {
 
   segments.forEach((seg, i) => {
     const segmentNum = i+1;
+    let flightCards = "";
+
+if (seg.flights.length === 0) {
+  flightCards = `
+    <div class="col-12 text-center py-4">
+      <div class="alert alert-warning" role="alert">
+        No flights available for this segment.
+      </div>
+    </div>
+  `;
+      flightSectionsHTML += `
+      <div class="flight-section scroll-target" id="segment${segmentNum}">
+        <div class="section-header">
+          <div class="segment-number">${segmentNum}</div>
+          <div>
+            <div class="section-title">${seg.flights[0]?.airport_from_name ?? ''}  ${seg.flights[0]?.airport_to_name ?? ''}</div>
+            <div class="section-subtitle">${formatDate(seg.date)}</div>
+          </div>
+        </div>
+        <div class="flight-cards row justify-content-center">
+          ${flightCards}
+        </div>
+      </div>
+    `;
+}else{
     const flightCards = seg.flights.map((flight, flightIndex) => {
       const faresHTML = (flight.flight_seat || []).map((fare, fareIdx) => `
   <div class="fare-option col-4"
@@ -839,14 +862,14 @@ function renderFlightSegments() {
             <div class="flight-times">
               <div class="time-block">
                 <div class="time-value">${formatTimeOnly(flight.departure_time)}</div>
-                <div class="time-label">${seg.flights[0].location_from}</div>
+                <div class="time-label">${seg.flights[0]?.location_from}</div>
               </div>
               <div class="flight-duration">
                 <div class="duration-text">${flight.duration}</div>
               </div>
               <div class="time-block">
                 <div class="time-value">${formatTimeOnly(flight.arrival_time)}</div>
-                <div class="time-label">${seg.flights[0].location_to}</div>
+                <div class="time-label">${seg.flights[0]?.location_to}</div>
               </div>
             </div>
             <div class="flight-route">
@@ -866,7 +889,7 @@ function renderFlightSegments() {
         <div class="section-header">
           <div class="segment-number">${segmentNum}</div>
           <div>
-            <div class="section-title">${seg.flights[0].airport_from_name} to ${seg.flights[0].airport_to_name}</div>
+            <div class="section-title">${seg.flights[0]?.airport_from_name ?? ''}  ${seg.flights[0]?.airport_to_name ?? ''}</div>
             <div class="section-subtitle">${formatDate(seg.date)}</div>
           </div>
         </div>
@@ -875,7 +898,9 @@ function renderFlightSegments() {
         </div>
       </div>
     `;
-  });
+      console.log(flightCards)
+  }})
+
   root.innerHTML = flightSectionsHTML;
 }
 
