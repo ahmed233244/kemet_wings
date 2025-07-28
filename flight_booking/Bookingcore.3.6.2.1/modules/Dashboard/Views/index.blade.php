@@ -69,7 +69,11 @@
                                             <td>#{{$booking->id}}</td>
                                             <td>
                                                 @if(get_bookable_service_by_id($booking->object_model) and $service = $booking->service)
-                                                    <a href="{{$service->getDetailUrl()}}" target="_blank">{{$service->title}}</a>
+                                                    <?php foreach($booking->flights as $f){
+            echo '<a href='.$f->flight->getDetailUrl().' target="_blank">'.$f->flight->title.'('.$f->flight->code.')</a><hr style="display:block !important">';
+
+        }
+        ?>
                                                 @else
                                                     {{__("[Deleted]")}}
                                                 @endif

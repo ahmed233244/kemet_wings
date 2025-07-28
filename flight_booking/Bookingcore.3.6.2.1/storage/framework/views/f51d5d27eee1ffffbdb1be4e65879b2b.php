@@ -136,7 +136,7 @@
                                                 <div class="col-lg-6">
                     <div class="form-group">
                         <label class="control-label">Group</label>
-                        <input type="text" name="group" class="form-control" value="" placeholder="<?php echo e(__("Group")); ?>">
+                        <input type="text" name="group" class="form-control" value="<?php echo e(old("group",$row->group)); ?>" placeholder="<?php echo e(__("Group")); ?>">
                     </div>
                 </div>
                 <div class="col-lg-6 d-none">

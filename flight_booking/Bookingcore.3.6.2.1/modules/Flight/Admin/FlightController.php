@@ -209,8 +209,17 @@ public function store(Request $request, $id)
             {
                 return redirect(route('flight.admin.index'));
             }
+            if ($request->input('group')) {
+                $flights=Flight::where('group',$request->input('group'))->get();
+                foreach($flights as $f){
+
+            $f->fillByAttr($dataKeys,$request->input());
+            $res = $f->save();
+                }
+            }else{
             $row->fillByAttr($dataKeys,$request->input());
             $row->save();
+            }
             return redirect(route('flight.admin.index'))->with('success');
     } else {
         $this->checkPermission('flight_create');
@@ -219,7 +228,7 @@ public function store(Request $request, $id)
             : "publish";
 
         // Handle bulk flight creation
-        if ($request->input('recurring_day')) {
+        if ($request->input('group')) {
             return $this->handleBulkCreation($request, $status);
         }
 

@@ -11,7 +11,8 @@
                 <div class="">
                     @if($row->id)
                         <a class="btn btn-primary btn-sm" href="{{route('flight.admin.flight.seat.index',['flight_id'=>$row->id])}}" target="_blank"><i class="fa fa-ticket" aria-hidden="true"></i> {{__(" Flight Ticket type")}}</a>
-                    @endif
+                        <a class="btn btn-primary btn-sm" href="{{route('flight.admin.flight.seat.report',['flight_id'=>$row->id])}}" target="_blank"><i class="fa fa-ticket" aria-hidden="true"></i> Report</a>
+                        @endif
                 </div>
             </div>
             @include('admin.message')

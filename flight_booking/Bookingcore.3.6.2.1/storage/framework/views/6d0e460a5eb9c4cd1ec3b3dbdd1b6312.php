@@ -70,7 +70,11 @@
                                             <td>#<?php echo e($booking->id); ?></td>
                                             <td>
                                                 <?php if(get_bookable_service_by_id($booking->object_model) and $service = $booking->service): ?>
-                                                    <a href="<?php echo e($service->getDetailUrl()); ?>" target="_blank"><?php echo e($service->title); ?></a>
+                                                    <?php foreach($booking->flights as $f){
+            echo '<a href='.$f->flight->getDetailUrl().' target="_blank">'.$f->flight->title.'('.$f->flight->code.')</a><hr style="display:block !important">';
+
+        }
+        ?>
                                                 <?php else: ?>
                                                     <?php echo e(__("[Deleted]")); ?>
 

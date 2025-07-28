@@ -1,23 +1,25 @@
 <tr>
     <td class="booking-history-type">
-        @if($service = $booking->flights->first->flight->flight)
-            <i class="{{$service->getServiceIconFeatured()}}"></i>
-        @endif
+
+            <i class="{{$booking->flights->first->flight->flight->getServiceIconFeatured()}}"></i>
         <small>{{$booking->object_model}}</small>
     </td>
     <td>
-        @if($service = $booking->flights->first->flight->flight)
-            {!! clean($service->title) !!}
-            ({!! clean($service->code) !!})
-        @else
-            {{__("[Deleted]")}}
-        @endif
+        <?php foreach($booking->flights as $f){
+            echo $f->flight->title.'('.$f->flight->code.')<hr style="display:block !important">';
+
+        }
+        ?>
     </td>
     <td class="a-hidden">{{display_date($booking->created_at)}}</td>
     <td class="a-hidden">
-        {{__("Departure time")}} : {{display_datetime($booking->start_date)}} <br>
-        {{__("Arrival Time ")}} : {{display_datetime($booking->end_date)}} <br>
-        {{__("Duration")}} : {{__(':duration hrs',['duration'=>@$booking->service->duration])}}
+         <?php foreach($booking->flights as $f){
+echo "Departure time : ".display_datetime($f->flight->departure_time)."<br>"
+        ."Arrival Time : ".display_datetime($f->flight->arrival_time)."<br>"
+        ."Duration :".$f->flight->duration.'hrs <hr style="display:block !important">';
+        }
+        ?>
+        
 
     </td>
     <td>{{format_money($booking->total)}}</td>

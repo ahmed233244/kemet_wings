@@ -11,7 +11,8 @@
                 <div class="">
                     <?php if($row->id): ?>
                         <a class="btn btn-primary btn-sm" href="<?php echo e(route('flight.admin.flight.seat.index',['flight_id'=>$row->id])); ?>" target="_blank"><i class="fa fa-ticket" aria-hidden="true"></i> <?php echo e(__(" Flight Ticket type")); ?></a>
-                    <?php endif; ?>
+                        <a class="btn btn-primary btn-sm" href="<?php echo e(route('flight.admin.flight.seat.report',['flight_id'=>$row->id])); ?>" target="_blank"><i class="fa fa-ticket" aria-hidden="true"></i> Report</a>
+                        <?php endif; ?>
                 </div>
             </div>
             <?php echo $__env->make('admin.message', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>

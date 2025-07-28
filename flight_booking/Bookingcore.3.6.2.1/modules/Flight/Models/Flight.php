@@ -140,9 +140,8 @@
 
         public function getDetailUrl($include_param = true)
         {
-            return "#";
             $param = [];
-            $urlDetail = app_get_locale(false, false, '/').config('flight.flight_route_prefix')."/".$this->id;
+            $urlDetail = app_get_locale(false, false, '/').'admin/module/flight/edit'."/".$this->id;
             if (!empty($param)) {
                 $urlDetail .= "?".http_build_query($param);
             }

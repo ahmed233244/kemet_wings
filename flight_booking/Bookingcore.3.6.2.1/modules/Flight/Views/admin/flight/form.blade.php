@@ -136,7 +136,7 @@
                                                 <div class="col-lg-6">
                     <div class="form-group">
                         <label class="control-label">Group</label>
-                        <input type="text" name="group" class="form-control" value="" placeholder="{{__("Group")}}">
+                        <input type="text" name="group" class="form-control" value="{{old("group",$row->group)}}" placeholder="{{__("Group")}}">
                     </div>
                 </div>
                 <div class="col-lg-6 d-none">

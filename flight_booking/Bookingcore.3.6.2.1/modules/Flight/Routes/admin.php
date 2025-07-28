@@ -9,7 +9,7 @@ Route::get('/edit/{id}','FlightController@edit')->name('flight.admin.edit');
 Route::post('/store/{id}','FlightController@store')->name('flight.admin.store');
 Route::post('/bulkEdit','FlightController@bulkEdit')->name('flight.admin.bulkEdit');
 Route::get('/recovery','FlightController@recovery')->name('flight.admin.recovery');
-
+Route::get('report/{flight_id}','FlightSeatController@report')->name('flight.admin.flight.seat.report');
 Route::group(['prefix'=>'{flight_id}/flight-seat'],function (){
     Route::get('/','FlightSeatController@index')->name('flight.admin.flight.seat.index');
     Route::get('edit/{id}','FlightSeatController@edit')->name('flight.admin.flight.seat.edit');

@@ -1,26 +1,25 @@
 <tr>
     <td class="booking-history-type">
-        <?php if($service = $booking->flights->first->flight->flight): ?>
-            <i class="<?php echo e($service->getServiceIconFeatured()); ?>"></i>
-        <?php endif; ?>
+
+            <i class="<?php echo e($booking->flights->first->flight->flight->getServiceIconFeatured()); ?>"></i>
         <small><?php echo e($booking->object_model); ?></small>
     </td>
     <td>
-        <?php if($service = $booking->flights->first->flight->flight): ?>
-            <?php echo clean($service->title); ?>
+        <?php foreach($booking->flights as $f){
+            echo $f->flight->title.'('.$f->flight->code.')<hr style="display:block !important">';
 
-            (<?php echo clean($service->code); ?>)
-        <?php else: ?>
-            <?php echo e(__("[Deleted]")); ?>
-
-        <?php endif; ?>
+        }
+        ?>
     </td>
     <td class="a-hidden"><?php echo e(display_date($booking->created_at)); ?></td>
     <td class="a-hidden">
-        <?php echo e(__("Departure time")); ?> : <?php echo e(display_datetime($booking->start_date)); ?> <br>
-        <?php echo e(__("Arrival Time ")); ?> : <?php echo e(display_datetime($booking->end_date)); ?> <br>
-        <?php echo e(__("Duration")); ?> : <?php echo e(__(':duration hrs',['duration'=>@$booking->service->duration])); ?>
-
+         <?php foreach($booking->flights as $f){
+echo "Departure time : ".display_datetime($f->flight->departure_time)."<br>"
+        ."Arrival Time : ".display_datetime($f->flight->arrival_time)."<br>"
+        ."Duration :".$f->flight->duration.'hrs <hr style="display:block !important">';
+        }
+        ?>
+        
 
     </td>
     <td><?php echo e(format_money($booking->total)); ?></td>

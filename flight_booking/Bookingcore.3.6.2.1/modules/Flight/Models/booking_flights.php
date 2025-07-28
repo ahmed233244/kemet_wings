@@ -9,7 +9,7 @@
     use Illuminate\Database\Eloquent\Factories\HasFactory;
     use Illuminate\Database\Eloquent\SoftDeletes;
     use Modules\Flight\Factories\AirLineFactory;
-
+    use Modules\Booking\Models\Booking;
     class booking_flights extends Model
     {
         use SoftDeletes;

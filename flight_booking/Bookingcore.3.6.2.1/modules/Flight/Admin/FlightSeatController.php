@@ -11,6 +11,7 @@
     use Modules\AdminController;
     use Modules\Flight\Models\Flight;
     use Modules\Flight\Models\FlightSeat;
+    use Modules\Flight\Models\booking_flights;
 
     class FlightSeatController extends AdminController
     {
@@ -93,6 +94,32 @@
             ];
             return view('Flight::admin.flight.seat.index', $data);
         }
+                public function report(Request $request,$flight_id)
+        {
+            $flight=FLight::find($flight_id);
+
+    $seatTypes = $flight->flightSeat;
+    $reportData = [];
+
+    foreach ($seatTypes as $seatType) {
+        $booked=0;
+        $bookings = booking_flights::where('fare_id', $seatType->id)->get();
+        foreach($bookings as $b){
+            $booked=$booked+$b->booking->total_guests;
+        }
+            if ($booked!=0){
+        $reportData[] = [
+            'name' => $seatType->seat_type ,
+            'total' => $seatType->max_passengers,
+            'booked' => $booked,
+            'available' => $seatType->total_seats - $booked,
+            'percentage' => ($booked / $seatType->max_passengers) * 100
+        ];
+    }
+}
+
+            return view('Flight::admin.flight.seat.report', compact('reportData'));
+        }
         public function edit(Request $request,$flight_id, $id)
         {
             $this->hasFlightPermission($flight_id);
@@ -129,12 +156,26 @@
         }
 
         public function store( Request $request,$flight_id, $id ){
-
+            $dataKeys = [
+                'seat_type','price','child_price','infant_price','max_passengers','person','baggage_check_in','baggage_cabin'
+            ];
             $this->hasFlightPermission($flight_id);
             if($id>0){
                 if($this->currentFlight->group){
-                    
+                $flights=Flight::where('group',$this->currentFlight->group)->get();
+                $index=0;
+                foreach(Flight::find($flight_id)->flightSeat as $s){
+                    if($s->id==$id){
+                        break;
+                    }
+                    $index++;
                 }
+            foreach($flights as $f){
+                    $seat=$f->flightSeat->skip($index)->take(1)->first();
+                
+            $seat->fillByAttr($dataKeys,$request->input());
+            $res = $seat->save();
+                }}
                 $this->checkPermission('flight_update');
                 $row = $this->flight_seat::find($id);
                 if (empty($row)) {
@@ -171,7 +212,7 @@
             if($this->hasPermission('flight_manage_others')){
                 $dataKeys[] = 'author_id';
             }
-            if($this->currentFlight->group){
+            if($this->currentFlight->group and $id<0 ){
                 $flights=Flight::where('group',$this->currentFlight->group)->get();
                 foreach($flights as $f){
             $row = new $this->flight_seat();
@@ -180,10 +221,11 @@
             $res = $row->save();
                 }
             }else{
+                if (!$this->currentFlight->group){
             $row->fillByAttr($dataKeys,$request->input());
             $row->flight_id = $this->currentFlight->id;
             $res = $row->save();
-            }
+            }}
             if ($res) {
                 return redirect(route('flight.admin.flight.seat.edit',['flight_id'=>$flight_id,'id'=>$row->id]))->with('success', __('Flight seat saved') );
             }
@@ -210,7 +252,20 @@
                         }
                         $row  =  $query->first();
                         if(!empty($row)){
-                            $row->delete();
+                                            if($row->flight->group){
+                $flights=Flight::where('group',$row->flight->group)->get();
+                $index=0;
+                foreach(Flight::find($row->flight->id)->flightSeat as $s){
+                    if($s->id==$id){
+                        break;
+                    }
+                    $index++;
+                }
+            foreach($flights as $f){
+                    $seat=$f->flightSeat->skip($index)->take(1)->first();
+                
+             $seat->forceDelete();
+                }}
                         }
                     }
                     return redirect()->back()->with('success', __('Deleted success!'));

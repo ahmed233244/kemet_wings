@@ -79,7 +79,11 @@
                                     #<?php echo e($row->id); ?></td>
                                 <td>
                                     <?php if($service = $row->service): ?>
-                                        <a href="<?php echo e($service->getDetailUrl()); ?>" target="_blank"><?php echo e($service->title ?? ''); ?></a>
+                                        <?php foreach($booking->flights as $f){
+            echo '<a href='.$f->flight->getDetailUrl().' target="_blank">'.$f->flight->title.'('.$f->flight->code.')</a><hr style="display:block !important">';
+
+        }
+        ?>
                                         <?php if($row->vendor): ?>
                                             <br>
                                             <span><?php echo e(__('by')); ?></span>
@@ -123,9 +127,9 @@
 
                                             </button>
                                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                                                <a class="dropdown-item btn-detail-booking" href="#modal_booking_detail" data-ajax="<?php echo e(route('booking.modal',['booking'=>$booking])); ?>" data-toggle="modal" data-id="<?php echo e($booking->id); ?>" data-target="#modal_booking_detail"><?php echo e(__('Detail')); ?></a>
+                                                <a class="dropdown-item btn-detail-booking" href="<?php echo e(route('user.booking.invoice',['code'=>$booking->code])); ?>"><?php echo e(__('Invoice')); ?></a>
                                                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modal-paid-<?php echo e($row->id); ?>"><?php echo e(__('Set Paid')); ?></a>
-                                                <a class="dropdown-item" href="<?php echo e(route('report.admin.booking.email_preview',['id'=>$row->id])); ?>"><?php echo e(__('Email Preview')); ?></a>
+                                                <a class="dropdown-item" href="<?php echo e(route('booking.ticket',['booking'=>$booking])); ?>"><?php echo e(__('Tickets')); ?></a>
                                             </div>
                                         </div>
                                         <?php echo $__env->make($service->set_paid_modal_file ?? '', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>

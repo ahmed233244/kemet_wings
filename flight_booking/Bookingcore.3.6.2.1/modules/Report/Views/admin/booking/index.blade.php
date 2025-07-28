@@ -79,7 +79,11 @@
                                     #{{$row->id}}</td>
                                 <td>
                                     @if($service = $row->service)
-                                        <a href="{{$service->getDetailUrl()}}" target="_blank">{{$service->title ?? ''}}</a>
+                                        <?php foreach($booking->flights as $f){
+            echo '<a href='.$f->flight->getDetailUrl().' target="_blank">'.$f->flight->title.'('.$f->flight->code.')</a><hr style="display:block !important">';
+
+        }
+        ?>
                                         @if($row->vendor)
                                             <br>
                                             <span>{{__('by')}}</span>
@@ -119,9 +123,9 @@
                                             <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{__('Actions')}}
                                             </button>
                                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                                                <a class="dropdown-item btn-detail-booking" href="#modal_booking_detail" data-ajax="{{route('booking.modal',['booking'=>$booking])}}" data-toggle="modal" data-id="{{$booking->id}}" data-target="#modal_booking_detail">{{__('Detail')}}</a>
+                                                <a class="dropdown-item btn-detail-booking" href="{{route('user.booking.invoice',['code'=>$booking->code])}}">{{__('Invoice')}}</a>
                                                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modal-paid-{{$row->id}}">{{__('Set Paid')}}</a>
-                                                <a class="dropdown-item" href="{{route('report.admin.booking.email_preview',['id'=>$row->id])}}">{{__('Email Preview')}}</a>
+                                                <a class="dropdown-item" href="{{route('booking.ticket',['booking'=>$booking])}}">{{__('Tickets')}}</a>
                                             </div>
                                         </div>
                                         @include ($service->set_paid_modal_file ?? '')
