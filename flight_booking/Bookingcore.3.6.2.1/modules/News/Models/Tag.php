@@ -7,7 +7,7 @@ use Modules\Core\Models\SEO;
 
 class Tag extends BaseModel
 {
-    use SoftDeletes;
+    
     protected $table = 'core_tags';
     protected $fillable      = [
         'name',

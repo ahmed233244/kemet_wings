@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Cache;
 
 class Language extends BaseModel
 {
-    use SoftDeletes;
+    
     protected $table = 'core_languages';
     protected $fillable = [
         'locale',

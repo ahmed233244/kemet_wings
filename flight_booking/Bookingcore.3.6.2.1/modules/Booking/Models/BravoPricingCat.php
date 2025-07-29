@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BravoPricingCat extends BaseModel
 {
-    use SoftDeletes;
+    
 
     protected $table = 'bravo_pricing_cat';
     protected $fillable = [

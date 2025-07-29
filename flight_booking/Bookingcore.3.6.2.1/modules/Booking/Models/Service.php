@@ -9,7 +9,7 @@ use Modules\Location\Models\Location;
 
 class Service extends BaseModel
 {
-    use SoftDeletes;
+    
     public    $type          = 'service';
     protected $table         = 'bravo_services';
     protected $slugField     = 'slug';

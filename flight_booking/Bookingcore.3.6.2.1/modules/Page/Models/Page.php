@@ -10,7 +10,7 @@ use Modules\Core\Models\SEO;
 
 class Page extends BaseModel
 {
-    use SoftDeletes;
+    
 
     protected $table = 'core_pages';
     protected $fillable = [

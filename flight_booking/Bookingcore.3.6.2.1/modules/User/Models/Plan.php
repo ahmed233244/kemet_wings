@@ -10,7 +10,7 @@ use Modules\Booking\Models\Bookable;
 class Plan extends Bookable
 {
 
-    use SoftDeletes;
+    
 
     protected $table = 'bravo_plans';
     public $type = 'plan';

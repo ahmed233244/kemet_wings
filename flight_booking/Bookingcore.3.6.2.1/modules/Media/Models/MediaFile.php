@@ -13,7 +13,7 @@ use Modules\Media\Helpers\FileHelper;
 
 class MediaFile extends BaseModel
 {
-    use SoftDeletes;
+    
     protected $table = 'media_files';
 
     public static function findMediaByName($name)

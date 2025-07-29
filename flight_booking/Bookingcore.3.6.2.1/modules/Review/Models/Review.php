@@ -10,7 +10,7 @@ use Modules\Review\Models\ReviewMeta;
 
 class Review extends BaseModel
 {
-    use SoftDeletes;
+    
     protected $table    = 'bravo_review';
     protected $fillable = [
         'object_id',

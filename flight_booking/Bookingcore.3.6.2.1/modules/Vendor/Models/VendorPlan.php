@@ -8,7 +8,7 @@ use Modules\Core\Models\SEO;
 
 class VendorPlan extends BaseModel
 {
-    use SoftDeletes;
+    
     protected $table = 'core_vendor_plans';
     protected $fillable = [
         'name',

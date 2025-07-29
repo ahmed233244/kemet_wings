@@ -13,7 +13,7 @@
 
     class Location extends BaseModel
     {
-        use SoftDeletes;
+        
         use NodeTrait;
         protected $table         = 'bravo_locations';
         protected $fillable      = [

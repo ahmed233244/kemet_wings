@@ -24,7 +24,7 @@ use Modules\Location\Models\Location;
 class Space extends Bookable
 {
     use Notifiable;
-    use SoftDeletes;
+    
     use CapturesService;
     protected $table = 'bravo_spaces';
     public $type = 'space';

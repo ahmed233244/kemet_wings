@@ -22,7 +22,7 @@ use Illuminate\Notifications\Notifiable;
 
 class Hotel extends Bookable
 {
-    use SoftDeletes;
+    
     use Notifiable;
     use CapturesService;
     protected $table                              = 'bravo_hotels';

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Rate extends BaseModel
 {
-    use SoftDeletes;
+    
 
     protected $table = 'bravo_rates';
 

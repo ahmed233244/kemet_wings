@@ -11,7 +11,7 @@
 
     class FlightSeat extends BaseModel
     {
-        use SoftDeletes;
+        
         use HasFactory;
 
         protected $table = 'bravo_flight_seat';

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Translation extends BaseModel
 {
-    use SoftDeletes;
+    
     protected $table = 'core_translations';
     protected $fillable = [
         'locale',

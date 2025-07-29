@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TourCategory extends BaseModel
 {
-    use SoftDeletes;
+    
     use NodeTrait;
     protected $table = 'bravo_tour_category';
     protected $fillable = [

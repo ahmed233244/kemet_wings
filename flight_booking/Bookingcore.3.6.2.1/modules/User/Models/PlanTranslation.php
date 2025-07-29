@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class PlanTranslation extends BaseModel
 {
 
-    use SoftDeletes;
+    
 
     protected $table = 'bravo_plan_trans';
 

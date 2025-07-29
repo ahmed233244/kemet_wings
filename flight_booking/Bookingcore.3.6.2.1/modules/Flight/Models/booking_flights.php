@@ -12,7 +12,7 @@
     use Modules\Booking\Models\Booking;
     class booking_flights extends Model
     {
-        use SoftDeletes;
+        
 
         protected $table ='booking_flights';
         protected $fillable = [

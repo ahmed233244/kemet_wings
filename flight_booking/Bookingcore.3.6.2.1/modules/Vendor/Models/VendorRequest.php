@@ -8,7 +8,7 @@ use Modules\User\Models\Role;
 
 class VendorRequest extends BaseModel
 {
-    use SoftDeletes;
+    
     protected $table = 'user_upgrade_request';
     protected $fillable = [
         'user_id',

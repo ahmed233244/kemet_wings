@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Auth;
 use Modules\Booking\Models\Booking;
 use Modules\Booking\Models\Enquiry;
 use App\Helpers\ReCaptchaEngine;
-
+use Illuminate\Support\Facades\Hash;
 class BookingController extends \App\Http\Controllers\Controller
 {
     use AuthorizesRequests;

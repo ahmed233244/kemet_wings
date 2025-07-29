@@ -24,7 +24,7 @@ use Modules\Core\Models\Attributes;
 class Tour extends Bookable
 {
     use Notifiable;
-    use SoftDeletes;
+    
     use CapturesService;
 
     protected $table                              = 'bravo_tours';

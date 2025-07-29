@@ -8,7 +8,7 @@ use Modules\Core\Models\SEO;
 
 class VendorPlanMeta extends BaseModel
 {
-    use SoftDeletes;
+    
     protected $table = 'core_vendor_plan_meta';
     protected $fillable = [
         'post_type',

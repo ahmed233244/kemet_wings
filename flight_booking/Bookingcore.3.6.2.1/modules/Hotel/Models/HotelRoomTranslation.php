@@ -18,7 +18,7 @@ use Modules\User\Models\UserWishList;
 
 class HotelRoomTranslation extends BaseModel
 {
-    use SoftDeletes;
+    
     protected $table = 'bravo_hotel_room_translations';
     public $type = 'hotel_room_translation';
 

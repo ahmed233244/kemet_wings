@@ -29,7 +29,7 @@
     class Flight extends Bookable
     {
         use Notifiable;
-        use SoftDeletes;
+        
         use CapturesService;
         use HasFactory;
 

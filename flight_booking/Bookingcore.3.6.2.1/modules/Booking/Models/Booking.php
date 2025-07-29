@@ -26,7 +26,7 @@ use Modules\Booking\Models\BookingPassenger;
 
 class Booking extends BaseModel
 {
-    use SoftDeletes;
+    
     use HasPassenger;
     protected $table      = 'bravo_bookings';
     protected $cachedMeta = [];

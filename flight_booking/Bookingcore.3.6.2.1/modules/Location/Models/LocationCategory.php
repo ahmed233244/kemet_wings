@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class LocationCategory extends BaseModel
 {
-    use SoftDeletes;
+    
     use NodeTrait;
     protected $table = 'location_category';
     protected $fillable = [

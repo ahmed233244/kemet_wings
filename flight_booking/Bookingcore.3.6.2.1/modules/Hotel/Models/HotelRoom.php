@@ -18,7 +18,7 @@ use Modules\User\Models\UserWishList;
 
 class HotelRoom extends Bookable
 {
-    use SoftDeletes;
+    
     protected $table = 'bravo_hotel_rooms';
     public $type = 'hotel_room';
     public $availabilityClass = HotelRoomDate::class;

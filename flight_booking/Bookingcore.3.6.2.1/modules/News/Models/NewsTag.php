@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class NewsTag extends BaseModel
 {
-    use SoftDeletes;
+    
     protected $table = 'core_news_tag';
     protected $fillable = [
         'news_id',

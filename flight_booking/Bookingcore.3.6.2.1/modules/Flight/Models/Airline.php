@@ -12,7 +12,7 @@
     class Airline extends BaseModel
     {
         use HasFactory;
-        use SoftDeletes;
+        
 
         protected $table ='bravo_airline';
         protected $fillable = ['name','image_id'];

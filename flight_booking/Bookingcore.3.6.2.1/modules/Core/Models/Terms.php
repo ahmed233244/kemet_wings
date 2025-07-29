@@ -21,7 +21,7 @@ use Modules\Tour\Models\TourTerm;
 
 class Terms extends BaseModel
 {
-    use SoftDeletes;
+    
     protected $table = 'bravo_terms';
     protected $fillable = [
         'name',

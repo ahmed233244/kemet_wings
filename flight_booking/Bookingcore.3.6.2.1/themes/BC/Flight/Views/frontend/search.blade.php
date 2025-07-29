@@ -861,14 +861,14 @@ if (seg.flights.length === 0) {
           <div class="flight-details">
             <div class="flight-times">
               <div class="time-block">
-                <div class="time-value">${formatTimeOnly(flight.departure_time)}</div>
+                <div class="time-value">${flight.departure_time.split('T')[1].slice(0, 5)}</div>
                 <div class="time-label">${seg.flights[0]?.location_from}</div>
               </div>
               <div class="flight-duration">
                 <div class="duration-text">${flight.duration}</div>
               </div>
               <div class="time-block">
-                <div class="time-value">${formatTimeOnly(flight.arrival_time)}</div>
+                <div class="time-value">${flight.arrival_time.split('T')[1].slice(0, 5)}</div>
                 <div class="time-label">${seg.flights[0]?.location_to}</div>
               </div>
             </div>

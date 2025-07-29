@@ -8,7 +8,7 @@ use Modules\Core\Models\SEO;
 
 class NewsCategory extends BaseModel
 {
-    use SoftDeletes;
+    
     use NodeTrait;
     protected $table = 'core_news_category';
     protected $fillable = [

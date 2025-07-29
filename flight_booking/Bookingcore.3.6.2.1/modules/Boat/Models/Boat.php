@@ -26,7 +26,7 @@ use Modules\Location\Models\Location;
 class Boat extends Bookable
 {
     use Notifiable;
-    use SoftDeletes;
+    
     use CapturesService;
 
     protected $table = 'bravo_boats';

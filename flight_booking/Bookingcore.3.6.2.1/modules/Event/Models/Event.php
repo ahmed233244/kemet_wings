@@ -28,7 +28,7 @@ use Modules\User\Models\UserWishList;
 class Event extends Bookable
 {
     use Notifiable;
-    use SoftDeletes;
+    
     use CapturesService;
     protected $table = 'bravo_events';
     public $type = 'event';

@@ -32,7 +32,7 @@ use Illuminate\Support\Facades\Auth;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use SoftDeletes;
+    
     use Notifiable;
     use HasRoles;
     use TwoFactorAuthenticatable;

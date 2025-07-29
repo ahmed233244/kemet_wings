@@ -9,7 +9,7 @@ use Modules\Review\Models\Review;
 
 class News extends BaseModel
 {
-    use SoftDeletes;
+    
     protected $table = 'core_news';
     protected $fillable = [
         'title',

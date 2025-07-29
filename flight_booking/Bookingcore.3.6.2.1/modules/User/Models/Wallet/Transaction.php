@@ -8,7 +8,7 @@ use Modules\Booking\Models\Payment;
 
 class Transaction extends BaseModel
 {
-    use SoftDeletes;
+    
 
     protected $table = 'credit_transactions';
 

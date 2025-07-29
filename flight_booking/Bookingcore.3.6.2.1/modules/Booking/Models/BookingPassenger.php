@@ -9,7 +9,7 @@
 
     class BookingPassenger extends BaseModel
     {
-        use SoftDeletes;
+        
         protected $slugField = false;
         protected $slugFromField = false;
         protected $table ='bravo_booking_passengers';
