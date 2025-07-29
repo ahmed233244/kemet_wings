@@ -259,6 +259,7 @@ protected function handleBulkCreation($request, $status)
 
     $time_departure = date('H:i', strtotime($request->input('departure_time')));
     $time_arrival = date('H:i', strtotime($request->input('arrival_time')));
+    $spans_next_day = $time_arrival->lt($time_departure);
     $starts_at = Carbon::parse($request->input('starts_at'));
     $ends_at = Carbon::parse($request->input('ends_at'));
     $recurring_days = $request->input('recurring_day');
@@ -286,6 +287,9 @@ protected function handleBulkCreation($request, $status)
         if (in_array($dayName, $recurring_days)) {
             $departureDateTime = $currentDate->format('Y-m-d') . ' ' . $time_departure;
             $arrivalDateTime = $currentDate->format('Y-m-d') . ' ' . $time_arrival;
+            if ($spans_next_day) {
+                $arrivalDateTime->addDay();
+            }
 
             $flight = new Flight();
             $flight->fill($commonData);
